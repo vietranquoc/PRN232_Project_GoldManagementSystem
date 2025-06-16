@@ -1,0 +1,30 @@
+# Visual Studio / .NET
+bin/
+obj/
+*.csproj.user
+*.suo
+*.user
+*.sln.docstates
+.vs/
+
+# NuGet
+packages/
+*.nupkg
+
+# ASP.NET Core
+appsettings.Development.json
+*.log
+wwwroot/lib/
+wwwroot/_content/
+
+# SQL Server
+*.mdf
+*.ldf
+
+# Environment
+.env
+*.local
+
+# IDE
+.idea/
+*.code-workspace
