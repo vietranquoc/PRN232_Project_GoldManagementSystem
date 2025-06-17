@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.EntityModel;
+using Microsoft.Extensions.Configuration;
 using Repositories.Infrastructure.Interfaces;
 using Services.Services.Interfaces;
 using System.Xml.Linq;
@@ -10,13 +11,14 @@ namespace Services.Services.Implementations
         private readonly HttpClient _httpClient;
         private readonly IGoldPriceRepository _goldPriceRepository;
         private readonly IGoldTypeRepository _goldTypeRepository;
-        private readonly string _apiUrl = "http://api.btmc.vn/api/BTMCAPI/getpricebtmc?key=3kd8ub1llcg9t45hnoh8hmn7t5kc2v"; 
+        private readonly string _apiUrl; 
 
-        public GoldPriceService(HttpClient httpClient, IGoldPriceRepository goldPriceRepository, IGoldTypeRepository goldTypeRepository)
+        public GoldPriceService(HttpClient httpClient, IGoldPriceRepository goldPriceRepository, IGoldTypeRepository goldTypeRepository, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _goldPriceRepository = goldPriceRepository;
             _goldTypeRepository = goldTypeRepository;
+            _apiUrl = configuration["BTMCApi:Url"];
         }
         public async Task UpdateGoldPricesAsync()
         {
