@@ -76,5 +76,41 @@ namespace Services.Services.Implementations
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
+        {
+            var users = await _userRepository.GetAllUsersAsync();
+            return users.Select(u => new UserDTO
+            {
+                Id = u.Id,
+                FullName = u.FullName,
+                Username = u.Username,
+                Phone = u.PhoneNumber,
+                Address = u.Address,
+                Email = u.Email,
+                RoleName = u.Role.Name,
+                IsActive = u.IsActive,
+                CreatedDate = u.CreatedDate,
+                CreatedBy = u.CreatedBy
+            });
+        }
+
+        public async Task<IEnumerable<UserDTO>> GetUsersByRoleAsync(string roleName)
+        {
+            var users = await _userRepository.GetUsersByRoleAsync(roleName);
+            return users.Select(u => new UserDTO
+            {
+                Id = u.Id,
+                FullName = u.FullName,
+                Username = u.Username,
+                Phone = u.PhoneNumber,
+                Address = u.Address,
+                Email = u.Email,
+                RoleName = u.Role.Name,
+                IsActive = u.IsActive,
+                CreatedDate = u.CreatedDate,
+                CreatedBy = u.CreatedBy
+            });
+        }
     }
 }

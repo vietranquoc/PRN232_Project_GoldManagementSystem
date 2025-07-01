@@ -1,0 +1,228 @@
+﻿body {
+    background: white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.form-control:focus {
+    border-color: #1a3c34;
+    box-shadow: 0 0 0 0.25rem rgba(26, 60, 52, 0.25);
+}
+
+.btn-primary {
+    background-color: white;
+    border-radius: 70px;
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1.1rem;
+    color: #d98e04;
+    font-weight: 600;
+    border-color: #d98e04;
+}
+
+    .btn-primary:hover {
+        background-color: #d98e04;
+        border-color: #d98e04;
+    }
+
+.form-group {
+    margin-bottom: 1.25rem;
+    text-align: left;
+}
+
+    .form-group label {
+        color: white;
+    }
+
+.alert {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+/* login */
+
+.login-container {
+    max-width: 450px;
+    width: 100%;
+    background: #f2b705;
+    padding: 2rem;
+    border-radius: 70px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.user-icon {
+    width: 80px;
+    height: 80px;
+    background: #f2cb05;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px solid #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    overflow: hidden;
+}
+
+.link-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+}
+
+.signup-a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+.forgot-password {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+.signup-a:hover, .forgot-password:hover {
+    text-decoration: underline;
+}
+
+/* signup */
+
+.register-container {
+    max-width: 450px;
+    width: 100%;
+    background: #f2b705;
+    padding: 2rem;
+    border-radius: 70px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+    .register-container h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: white;
+        font-weight: 600;
+    }
+
+.login-a {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+    display: block;
+    text-align: center;
+    margin-top: 0.2rem;
+}
+    .login-a:hover {
+        text-decoration:underline;
+    }
+
+
+/* Header */
+header {
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: #FFD700 !important;
+}
+
+.nav-link {
+    color: #333 !important;
+    font-weight: 500;
+}
+
+    .nav-link:hover {
+        color: #FFD700 !important;
+    }
+
+/* Banner */
+.hero-section {
+    position: relative;
+    height: 600px;
+    overflow: hidden;
+}
+
+.hero-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.7;
+    z-index: -1;
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+.btn-warning {
+    background-color: #FFD700;
+    border-color: #FFD700;
+    color: #333;
+}
+
+    .btn-warning:hover {
+        background-color: #e6c200;
+        border-color: #e6c200;
+    }
+
+/* Giá Vàng */
+.gold-price-section table {
+    background-color: white;
+    border-radius: 10px;
+}
+
+/* Sản phẩm nổi bật */
+.featured-products .card {
+    border: none;
+    transition: transform 0.3s;
+}
+
+    .featured-products .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+/* Tin tức */
+.news-section .card {
+    border: none;
+    transition: transform 0.3s;
+}
+
+    .news-section .card:hover {
+        transform: translateY(-5px);
+    }
+
+/* Footer */
+footer a {
+    text-decoration: none;
+}
+
+    footer a:hover {
+        opacity: 0.8;
+    }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section {
+        height: 400px;
+    }
+
+    .navbar-nav {
+        text-align: center;
+    }
+
+    .featured-products .col-sm-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}

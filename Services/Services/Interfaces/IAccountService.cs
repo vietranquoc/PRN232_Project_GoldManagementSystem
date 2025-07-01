@@ -6,5 +6,7 @@ namespace Services.Services.Interfaces
     {
         Task RegisterAsync(RegisterDTO dto);
         Task<string> LoginAsync(LoginDTO dto);
+        Task<IEnumerable<UserDTO>> GetAllUsersAsync();
+        Task<IEnumerable<UserDTO>> GetUsersByRoleAsync(string roleName);
     }
 }

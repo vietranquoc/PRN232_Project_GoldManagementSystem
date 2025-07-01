@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
 
@@ -40,6 +41,86 @@ namespace API.Controllers
             catch (ArgumentException ex)
             {
                 return Unauthorized(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all user accounts.
+        /// Only accessible to Manager role.
+        /// </summary>
+        /// <returns>List of all users</returns>
+        [HttpGet("all")]
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            try
+            {
+                var users = await _accountService.GetAllUsersAsync();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Failed to retrieve users: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all customer accounts.
+        /// Only accessible to Manager role.
+        /// </summary>
+        /// <returns>List of customer users</returns>
+        [HttpGet("customers")]
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> GetCustomerUsers()
+        {
+            try
+            {
+                var users = await _accountService.GetUsersByRoleAsync("Customer");
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Failed to retrieve customer users: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all employee accounts.
+        /// Only accessible to Manager role.
+        /// </summary>
+        /// <returns>List of employee users</returns>
+        [HttpGet("employees")]
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> GetEmployeeUsers()
+        {
+            try
+            {
+                var users = await _accountService.GetUsersByRoleAsync("Employee");
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Failed to retrieve employee users: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all manager accounts.
+        /// Only accessible to Manager role.
+        /// </summary>
+        /// <returns>List of manager users</returns>
+        [HttpGet("managers")]
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> GetManagerUsers()
+        {
+            try
+            {
+                var users = await _accountService.GetUsersByRoleAsync("Manager"); 
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Failed to retrieve admin users: {ex.Message}");
             }
         }
     }

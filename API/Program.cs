@@ -14,6 +14,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CORSPolicy",
+        builder => builder.AllowAnyOrigin()
+                          .AllowAnyMethod()
+                          .AllowAnyHeader());
+});
+
 // Thêm DbContext cho SQL Server
 builder.Services.AddDbContext<GoldManagementContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -64,6 +73,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("CORSPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

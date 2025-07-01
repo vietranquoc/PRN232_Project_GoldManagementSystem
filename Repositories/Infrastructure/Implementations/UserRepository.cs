@@ -17,7 +17,22 @@ namespace Repositories.Infrastructure.Implementations
             return await _context.Users
                 .Include(u => u.Role) 
                 .FirstOrDefaultAsync(u => u.Username == username && u.IsActive)
-                ?? throw new InvalidOperationException($"User with username '{username}' not found or is inactive.");
+                ?? throw new Exception("User not found.");
+        }
+
+        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        {
+            return await _context.Users
+                .Include(u => u.Role)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<User>> GetUsersByRoleAsync(string roleName)
+        {
+            return await _context.Users
+                .Include(u => u.Role)
+                .Where(u => u.Role.Name == roleName)
+                .ToListAsync();
         }
     }
 }
