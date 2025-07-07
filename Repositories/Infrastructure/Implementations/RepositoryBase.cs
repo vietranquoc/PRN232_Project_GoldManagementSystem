@@ -52,7 +52,16 @@ namespace Repositories.Infrastructure.Implementations
         {
             if (entity is EntityBase entityBase)
             {
-                entityBase.CreatedBy = CurrentUserId;
+                int createdBy = 0;
+                try
+                {
+                    createdBy = CurrentUserId;
+                }
+                catch
+                {
+                    // Không có user đăng nhập, dùng 0 (system)
+                }
+                entityBase.CreatedBy = createdBy;
                 entityBase.CreatedDate = DateTime.UtcNow;
                 entityBase.IsActive = true;
             }

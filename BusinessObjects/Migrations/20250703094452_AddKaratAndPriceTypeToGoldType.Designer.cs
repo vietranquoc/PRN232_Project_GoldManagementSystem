@@ -4,6 +4,7 @@ using BusinessObjects.DBContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BusinessObjects.Migrations
 {
     [DbContext(typeof(GoldManagementContext))]
-    partial class GoldManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20250703094452_AddKaratAndPriceTypeToGoldType")]
+    partial class AddKaratAndPriceTypeToGoldType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,6 +313,19 @@ namespace BusinessObjects.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedBy = 1,
+                            CreatedDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            FullName = "Admin User",
+                            IsActive = true,
+                            Password = "$2a$11$HztrffNhajQaClulYm7N5OwsePdtufa7t7arD6IVzoAxnjmBohDyu",
+                            RoleId = 3,
+                            Username = "admin"
+                        });
                 });
 
             modelBuilder.Entity("BusinessObjects.EntityModel.GoldPrice", b =>

@@ -8,7 +8,69 @@ header {
     z-index: 1000;
 }
 
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 15px;
+}
+
+.hleft, .hright {
+    display: flex;
+    align-items: center;
+}
+
+.hlogo {
+    max-height: 50px;
+}
+
+.hsearch {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+    .hsearch button {
+        background: none;
+        border: none;
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    .hsearch svg, .hwishlist svg, .hcheckout svg {
+        fill: #222;
+        transition: fill 0.3s;
+    }
+
+    .hsearch button:hover svg, .hwishlist a:hover svg, .hcheckout a:hover svg {
+        fill: #FFD700;
+    }
+
+    .hsearch input {
+        width: 200px;
+        padding: 5px 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-left: 5px;
+    }
+
+.hwishlist, .hcheckout {
+    position: relative;
+    margin-left: 15px;
+}
+
+.wish_count, .cart_count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
 .navbar-brand {
+    font-size: 2rem;
     font-weight: 700;
     color: #FFD700 !important;
 }
@@ -20,6 +82,31 @@ header {
 
     .nav-link:hover {
         color: #FFD700 !important;
+    }
+
+.navbar-nav .dropdown-menu {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.dropdown-toggle::after {
+    transition: transform 0.3s;
+}
+
+.dropdown-toggle.show::after {
+    transform: rotate(180deg);
+}
+
+.btn-outline-primary {
+    color: #fff;
+    background-color: #f2cb05;
+    border-color: #f2cb05;
+}
+
+    .btn-outline-primary:hover {
+        color: #d98e04;
+        background-color: #fff;
+        border-color: #d98e04;
     }
 
 .hero-section {
@@ -87,18 +174,3 @@ footer a {
     footer a:hover {
         opacity: 0.8;
     }
-
-@media (max-width: 768px) {
-    .hero-section {
-        height: 400px;
-    }
-
-    .navbar-nav {
-        text-align: center;
-    }
-
-    .featured-products .col-sm-6 {
-        flex: 0 0 50%;
-        max-width: 50%;
-    }
-}

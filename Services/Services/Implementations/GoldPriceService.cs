@@ -1,79 +1,86 @@
-﻿using BusinessObjects.EntityModel;
+﻿using BusinessObjects.DTOs;
+using BusinessObjects.EntityModel;
 using Microsoft.Extensions.Configuration;
 using Repositories.Infrastructure.Interfaces;
 using Services.Services.Interfaces;
-using System.Xml.Linq;
 
 namespace Services.Services.Implementations
 {
     public class GoldPriceService : IGoldPriceService
     {
-        private readonly HttpClient _httpClient;
         private readonly IGoldPriceRepository _goldPriceRepository;
         private readonly IGoldTypeRepository _goldTypeRepository;
-        private readonly string _apiUrl; 
 
-        public GoldPriceService(HttpClient httpClient, IGoldPriceRepository goldPriceRepository, IGoldTypeRepository goldTypeRepository, IConfiguration configuration)
+        public GoldPriceService(IGoldPriceRepository goldPriceRepository, IGoldTypeRepository goldTypeRepository)
         {
-            _httpClient = httpClient;
             _goldPriceRepository = goldPriceRepository;
             _goldTypeRepository = goldTypeRepository;
-            _apiUrl = configuration["BTMCApi:Url"];
         }
-        public async Task UpdateGoldPricesAsync()
+
+        public async Task AddManualGoldPriceAsync(ManualGoldPriceDTO dto)
         {
-            var response = await _httpClient.GetAsync(_apiUrl);
-            if (!response.IsSuccessStatusCode)
+            await SaveGoldPriceAsync(
+                name: dto.Name,
+                karat: dto.Karat,
+                priceType: dto.PriceType,
+                description: dto.Description,
+                buy: dto.BuyPrice,
+                sell: dto.SellPrice,
+                recordedAt: dto.RecordedAt ?? DateTime.Now
+            );
+        }
+
+        private async Task SaveGoldPriceAsync(string name, int? karat, string priceType, string description, decimal buy, decimal sell, DateTime recordedAt)
+        {
+            try
             {
-                throw new Exception($"API call failed with status code {response.StatusCode}");
-            }
-
-            var xmlContent = await response.Content.ReadAsStringAsync();
-            var xmlDoc = XDocument.Parse(xmlContent);
-
-            foreach (var row in xmlDoc.Descendants("row"))
-            {
-                var goldName = row.Attribute("n_1")?.Value;
-                var goldType = row.Attribute("k_1")?.Value;
-                var purity = row.Attribute("h_1")?.Value;
-                var buyPriceChi = decimal.Parse(row.Attribute("pb_1")?.Value ?? "0");
-                var sellPriceChi = decimal.Parse(row.Attribute("ps_1")?.Value ?? "0");
-                var recordedAt = DateTime.ParseExact(row.Attribute("d_1")?.Value, "dd/MM/yyyy HH:mm", null);
-
-                var buyPriceGram = buyPriceChi / 3.75m;
-                var sellPriceGram = sellPriceChi / 3.75m;
-
-                var goldTypeEntity = await _goldTypeRepository.GetByNameAsync(goldName);
-                if (goldTypeEntity == null)
+                var goldType = await _goldTypeRepository.GetByConditionsAsync(name, karat, priceType);
+                if (goldType == null)
                 {
-                    goldTypeEntity = new GoldType
+                    goldType = new BusinessObjects.EntityModel.GoldType
                     {
-                        Name = goldName,
-                        Description = $"{goldType} - {purity}%"
-                        // CreatedBy và CreatedDate sẽ được gán trong RepositoryBase
+                        Name = name,
+                        Karat = karat,
+                        PriceType = priceType,
+                        Description = description
                     };
-                    _goldTypeRepository.Insert(goldTypeEntity);
+                    _goldTypeRepository.Insert(goldType);
                     await _goldTypeRepository.SaveChangesAsync();
+                    Console.WriteLine($"Inserted GoldType: Name={name}, Karat={karat}, PriceType={priceType}");
                 }
 
-                var goldPrice = new GoldPrice
+                var goldPrice = new BusinessObjects.EntityModel.GoldPrice
                 {
-                    GoldTypeId = goldTypeEntity.Id,
-                    BuyPrice = buyPriceGram,
-                    SellPrice = sellPriceGram,
+                    GoldTypeId = goldType.Id,
+                    BuyPrice = buy,
+                    SellPrice = sell,
                     RecordedAt = recordedAt
-                    // CreatedBy và CreatedDate sẽ được gán trong RepositoryBase
                 };
+
                 _goldPriceRepository.Insert(goldPrice);
+                await _goldPriceRepository.SaveChangesAsync();
+                Console.WriteLine($"Inserted GoldPrice: GoldTypeId={goldType.Id}, Buy={buy}, Sell={sell}, Time={recordedAt}");
             }
-
-            await _goldPriceRepository.SaveChangesAsync();
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving gold price: {ex}");
+                throw;
+            }
         }
 
-        public async Task<IEnumerable<GoldPrice>> GetLatestGoldPricesAsync()
+        public async Task<IEnumerable<GoldPriceResponseDTO>> GetLatestGoldPricesAsync()
         {
-            return await _goldPriceRepository.GetLatestPricesAsync();
-        }
+            var latestPrices = await _goldPriceRepository.GetLatestPricesAsync();
 
+            return latestPrices.Select(gp => new GoldPriceResponseDTO
+            {
+                GoldTypeId = gp.GoldTypeId,
+                GoldTypeName = gp.GoldType?.Name ?? "",
+                Description = gp.GoldType?.Description ?? "",
+                BuyPrice = gp.BuyPrice,
+                SellPrice = gp.SellPrice,
+                RecordedAt = gp.RecordedAt
+            });
+        }
     }
 }

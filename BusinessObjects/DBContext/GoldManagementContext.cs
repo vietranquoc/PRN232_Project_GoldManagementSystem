@@ -112,6 +112,21 @@ namespace BusinessObjects.DBContext
             modelBuilder.Entity<Transaction>()
                 .HasIndex(t => t.TransactionDate);
 
+            modelBuilder.Entity<GoldType>()
+                .Property(gt => gt.PriceType)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            modelBuilder.Entity<GoldType>()
+                .Property(gt => gt.Karat)
+                .HasPrecision(2, 0); // tối đa 99K, đủ dùng
+
+            modelBuilder.Entity<GoldType>()
+                .HasIndex(gt => new { gt.Name, gt.Karat, gt.PriceType })
+                .IsUnique(); // tránh bị trùng loại vàng
+
+
+
             #region Seed Data
             var seedDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -119,20 +134,6 @@ namespace BusinessObjects.DBContext
                 new Role { Id = 1, Name = "Customer", Description = "Khách hàng mua/bán vàng" },
                 new Role { Id = 2, Name = "Employee", Description = "Nhân viên thực hiện giao dịch" },
                 new Role { Id = 3, Name = "Manager", Description = "Quản lý tiệm vàng" }
-            );
-
-            modelBuilder.Entity<User>().HasData(
-                new User
-                {
-                    Id = 1,
-                    FullName = "Admin User",
-                    Username = "admin",
-                    Password = BCrypt.Net.BCrypt.HashPassword("admin123"), // Hash password
-                    RoleId = 3, // Manager
-                    IsActive = true,
-                    CreatedDate = seedDate,
-                    CreatedBy = 1
-                }
             );
             #endregion
         }

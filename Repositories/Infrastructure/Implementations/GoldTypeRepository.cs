@@ -17,5 +17,15 @@ namespace Repositories.Infrastructure.Implementations
                 .FirstOrDefaultAsync(gt => gt.Name == name)
                 ?? throw new InvalidOperationException($"Gold type with name '{name}' not found.");
         }
+
+        public async Task<GoldType?> GetByConditionsAsync(string name, int? karat, string priceType)
+        {
+            return await _context.GoldTypes.FirstOrDefaultAsync(gt =>
+                gt.Name == name &&
+                gt.Karat == karat &&
+                gt.PriceType == priceType
+            );
+        }
+
     }
 }

@@ -1,10 +1,12 @@
-﻿using BusinessObjects.EntityModel;
+﻿using BusinessObjects.DTOs;
+using BusinessObjects.EntityModel;
 
 namespace Services.Services.Interfaces
 {
     public interface IGoldPriceService
     {
-        Task UpdateGoldPricesAsync();
-        Task<IEnumerable<GoldPrice>> GetLatestGoldPricesAsync();
+        Task AddManualGoldPriceAsync(ManualGoldPriceDTO dto);
+        Task<IEnumerable<GoldPriceResponseDTO>> GetLatestGoldPricesAsync();
+
     }
 }

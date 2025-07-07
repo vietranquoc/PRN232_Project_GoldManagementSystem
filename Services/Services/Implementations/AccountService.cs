@@ -37,8 +37,8 @@ namespace Services.Services.Implementations
             {
                 FullName = dto.FullName,
                 Username = dto.Username,
-                Password = BCrypt.Net.BCrypt.HashPassword(dto.Password), // Hash the password
-                RoleId = dto.RoleId,
+                Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                RoleId = 1,
                 PhoneNumber = dto.Phone,
                 Address = dto.Address,
                 Email = dto.Email
@@ -111,6 +111,52 @@ namespace Services.Services.Implementations
                 CreatedDate = u.CreatedDate,
                 CreatedBy = u.CreatedBy
             });
+        }
+
+        public async Task CreateEmployeeAsync(CreateEmployeeDTO dto)
+        {
+            var existingUser = await _userRepository.GetByUsernameAsync(dto.Username);
+            if (existingUser != null)
+                throw new ArgumentException("Username already exists.");
+
+            var user = new User
+            {
+                FullName = dto.FullName,
+                Username = dto.Username,
+                Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                RoleId = 2,
+                PhoneNumber = dto.Phone,
+                Address = dto.Address,
+                Email = dto.Email
+            };
+
+            _userRepository.Insert(user);
+            await _userRepository.SaveChangesAsync();
+        }
+
+        public async Task UpdateProfileAsync(int userId, UpdateProfileDTO dto)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) throw new Exception("User not found.");
+
+            user.FullName = dto.FullName;
+            user.Email = dto.Email;
+            user.PhoneNumber = dto.Phone;
+            user.Address = dto.Address;
+
+            _userRepository.Update(user);
+            await _userRepository.SaveChangesAsync();
+        }
+
+        public async Task ForgotPasswordAsync(ForgotPasswordDTO dto)
+        {
+            var user = await _userRepository.GetByUsernameAsync(dto.Username);
+            if (user == null || user.Email?.ToLower() != dto.Email.ToLower())
+                throw new Exception("User or email not found.");
+
+            user.Password = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+            _userRepository.Update(user);
+            await _userRepository.SaveChangesAsync();
         }
     }
 }

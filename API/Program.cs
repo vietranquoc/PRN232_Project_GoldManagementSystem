@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BusinessObjects.DBContext;
+using BusinessObjects.EntityModel;
 using Repositories.Infrastructure.Implementations;
 using Repositories.Infrastructure.Interfaces;
 using Services.Services.Interfaces;
@@ -79,5 +80,30 @@ app.UseCors("CORSPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Seed dữ liệu động khi khởi động project
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<GoldManagementContext>();
+
+    // Seed Manager account nếu chưa có
+    if (!context.Users.Any(u => u.RoleId == 3))
+    {
+        var manager = new User
+        {
+            FullName = "Manager",
+            Username = "manager",
+            // Hash password nếu hệ thống có hash, ở đây dùng plain cho demo
+            Password = BCrypt.Net.BCrypt.HashPassword("123456"),
+            RoleId = 3,
+            Email = "manager@example.com",
+            Address = "",
+            PhoneNumber = "",
+            IsActive = true
+        };
+        context.Users.Add(manager);
+        context.SaveChanges();
+    }
+}
 
 app.Run();

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
+using BusinessObjects.DTOs;
 
 namespace API.Controllers
 {
@@ -15,49 +16,34 @@ namespace API.Controllers
             _goldPriceService = goldPriceService;
         }
 
-        /// <summary>
-        /// Updates gold prices by fetching data from BTMC API.
-        /// Only accessible to Manager role.
-        /// </summary>
-        /// <returns>Confirmation message</returns>
-        [HttpPost("update")]
-        [Authorize(Roles = "Manager")]
-        public async Task<IActionResult> UpdateGoldPrices()
-        {
-            try
-            {
-                await _goldPriceService.UpdateGoldPricesAsync();
-                return Ok("Gold prices updated successfully.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Failed to update gold prices: {ex.Message}");
-            }
-        }
-
         [HttpGet("lastest")]
-        [Authorize]
-        public async Task<IActionResult> GetlastestGoldPrices()
+        //[Authorize]
+        public async Task<IActionResult> GetLatestGoldPrices()
         {
             try
             {
-                var goldPrices = await _goldPriceService.GetLatestGoldPricesAsync();
-                var result = goldPrices.Select(gp => new
-                {
-                    GoldTypeId = gp.GoldTypeId,
-                    GoldTypeName = gp.GoldType.Name,
-                    BuyPrice = gp.BuyPrice,
-                    SellPrice = gp.SellPrice,
-                    RecordedAt = gp.RecordedAt,
-                    CreatedBy = gp.CreatedBy,
-                    CreatedDate = gp.CreatedDate
-                });
+                var result = await _goldPriceService.GetLatestGoldPricesAsync();
                 return Ok(result);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Failed to retrieve gold prices: {ex.Message}");
             }
-        }    
+        }
+
+        [HttpPost("manual")]
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> AddManualGoldPrice([FromBody] ManualGoldPriceDTO dto)
+        {
+            try
+            {
+                await _goldPriceService.AddManualGoldPriceAsync(dto);
+                return Ok("Gold price added successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Failed to add gold price: {ex.Message}");
+            }
+        }
     }
 }

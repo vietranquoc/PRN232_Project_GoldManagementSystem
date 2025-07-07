@@ -16,8 +16,7 @@ namespace Repositories.Infrastructure.Implementations
         {
             return await _context.Users
                 .Include(u => u.Role) 
-                .FirstOrDefaultAsync(u => u.Username == username && u.IsActive)
-                ?? throw new Exception("User not found.");
+                .FirstOrDefaultAsync(u => u.Username == username && u.IsActive);
         }
 
         public async Task<IEnumerable<User>> GetAllUsersAsync()

@@ -11,31 +11,105 @@
 <body>
     <!-- Header -->
     <header class="fixed-top bg-white shadow-sm">
-        <nav class="navbar navbar-expand-lg">
-            <div class="container">
-                <a class="navbar-brand" href="#">
+        <div class="header-container d-flex align-items-center justify-content-between py-2">
+            <!-- Left Section -->
+            <div class="hleft">
+                <!-- Search -->
+                <div class="hsearch ms-3">
+                    <button aria-label="Search">
+                        <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12.375" cy="12.375" r="7.875" stroke="#020203" stroke-width="3"></circle>
+                            <path d="M24.1442 24.8365L20.7692 21.4615" stroke="#010101" stroke-width="3" stroke-linecap="round"></path>
+                        </svg>
+                    </button>
+                    <input autocomplete="off" type="text" id="inputSearchHeader" name="q" placeholder="Tìm kiếm" aria-label="Search products" onkeydown="checkInputSearchEnter(event)">
+                    <div id="searchHeaderArea"></div>
+                </div>
+            </div>
+            <!-- Center Section (Logo) -->
+            <div class="text-center">
+                <a href="/" class="navbar-brand">
                     <i class="fas fa-gem me-2"></i>GoldTrack
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+            </div>
+            <!-- Right Section -->
+            <div class="hright">
+                <!-- Wishlist -->
+                <div class="hwishlist">
+                    <a href="/wishlist" aria-label="Wishlist">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.93421 18.5443L15.3153 27.3568C15.6397 27.6616 15.802 27.814 16 27.814C16.198 27.814 16.3602 27.6616 16.6847 27.3568L26.0657 18.5443C28.674 16.0941 28.9907 12.0621 26.7971 9.23474L26.3846 8.7031C23.7603 5.32075 18.4928 5.888 16.6489 9.75151C16.3884 10.2973 15.6116 10.2973 15.3511 9.75151C13.5071 5.888 8.23961 5.32075 5.61537 8.7031L5.2029 9.23474C3.00924 12.0621 3.32598 16.0941 5.93421 18.5443Z" fill="#222222" stroke="#222222" stroke-width="2"></path>
+                        </svg>
+                        <div class="wish_count">0</div>
+                    </a>
+                </div>
+                <!-- Cart -->
+                <div class="hcheckout ms-3">
+                    <a href="/cart" aria-label="Cart">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10.6667 16L10.6667 10.6667C10.6667 7.72115 13.0545 5.33334 16 5.33334V5.33334C18.9455 5.33334 21.3334 7.72115 21.3334 10.6667L21.3334 16" stroke="#222222" stroke-width="2" stroke-linecap="round"></path>
+                            <path d="M5.02768 15.6678C5.17276 13.9269 5.24529 13.0565 5.81938 12.5282C6.39347 12 7.26693 12 9.01386 12H22.9861C24.7331 12 25.6065 12 26.1806 12.5282C26.7547 13.0565 26.8272 13.9269 26.9723 15.6678L27.8195 25.8339C27.904 26.8474 27.9462 27.3542 27.6491 27.6771C27.352 28 26.8435 28 25.8264 28H6.1736C5.15655 28 4.64802 28 4.35092 27.6771C4.05382 27.3542 4.09605 26.8474 4.18051 25.8339L5.02768 15.6678Z" fill="#222222"></path>
+                        </svg>
+                        <div class="cart_count">0</div>
+                    </a>
+                </div>
+                <!-- Login -->
+                <a href="../../Pages/Account/login.html" class="btn btn-outline-primary ms-3">Đăng nhập</a>
+            </div>
+        </div>
+        <!-- Navigation Menu -->
+        <nav class="navbar navbar-expand-lg bg-white">
+            <div class="container">
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav mx-auto">
-                        <li class="nav-item"><a class="nav-link" href="#">Trang chủ</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Sản phẩm</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Giá vàng</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Mua/Bán vàng</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Tin tức</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Giới thiệu</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#">Liên hệ</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/">Trang chủ</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Sản phẩm
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/collections/trang-suc-vang">Trang sức vàng</a></li>
+                                <li><a class="dropdown-item" href="/collections/nhan-cuoi">Nhẫn cưới</a></li>
+                                <li><a class="dropdown-item" href="/collections/nhan-dinh-hon">Nhẫn cầu hôn</a></li>
+                                <li><a class="dropdown-item" href="/collections/vang-24k">Vàng 24K</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/blogs/gia-vang-hom-nay">Giá vàng</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Mua/Bán vàng
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/mua-vang">Mua vàng</a></li>
+                                <li><a class="dropdown-item" href="/ban-vang">Bán vàng</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Tin tức
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/tin-khuyen-mai">Tin khuyến mãi</a></li>
+                                <li><a class="dropdown-item" href="/blog-trang-suc">Blog trang sức</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/ve-chung-toi">Giới thiệu</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/lien-he">Liên hệ</a>
+                        </li>
                     </ul>
-                    <a href="#" class="btn btn-outline-primary ms-2">Đăng nhập/Đăng ký</a>
                 </div>
             </div>
         </nav>
     </header>
 
-    <!-- Banner -->
+    <!-- Hero Section -->
     <section class="hero-section">
         <div class="container text-center text-white py-5">
             <h1 class="display-4 fw-bold">Mua bán vàng uy tín – Giá cập nhật liên tục</h1>
@@ -46,7 +120,7 @@
         <div class="hero-image" style="background-image: url('https://via.placeholder.com/1920x600');"></div>
     </section>
 
-    <!-- Giá Vàng -->
+    <!-- Gold Price Section -->
     <section class="gold-price-section py-5">
         <div class="container">
             <h2 class="text-center mb-4">Giá Vàng Hôm Nay</h2>
@@ -59,19 +133,19 @@
                             <th>Bán ra</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr><td>SJC</td><td>80.50 triệu</td><td>81.00 triệu</td></tr>
-                        <tr><td>9999</td><td>80.30 triệu</td><td>80.80 triệu</td></tr>
-                        <tr><td>DOJI</td><td>80.40 triệu</td><td>80.90 triệu</td></tr>
-                        <tr><td>PNJ</td><td>80.35 triệu</td><td>80.85 triệu</td></tr>
+                    <tbody id="gold-price-tbody">
+                        <tr><td colspan="3">Đang tải...</td></tr>
                     </tbody>
                 </table>
             </div>
-            <p class="text-center mt-3">Cập nhật tự động mỗi 10 giây</p>
+            <p class="text-center mt-3">
+                <button id="update-gold-btn" class="btn btn-primary">Cập nhật giá</button>
+                <span id="update-status" class="ms-2"></span>
+            </p>
         </div>
     </section>
 
-    <!-- Sản phẩm nổi bật -->
+    <!-- Featured Products -->
     <section class="featured-products py-5">
         <div class="container">
             <h2 class="text-center mb-4">Sản phẩm Nổi bật</h2>
@@ -120,7 +194,7 @@
         </div>
     </section>
 
-    <!-- Tin tức -->
+    <!-- News Section -->
     <section class="news-section py-5 bg-light">
         <div class="container">
             <h2 class="text-center mb-4">Tin tức & Blog</h2>
@@ -187,15 +261,60 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
-        // Giả lập cập nhật giá vàng
-        setInterval(() => {
-            const prices = document.querySelectorAll('.table tbody td:nth-child(2), .table tbody td:nth-child(3)');
-            prices.forEach(td => {
-                let price = parseFloat(td.textContent.replace(' triệu', '')) || 80.00;
-                price += (Math.random() - 0.5) * 0.1;
-                td.textContent = price.toFixed(2) + ' triệu';
-            });
-        }, 10000);
+        // Search functionality
+        function checkInputSearchEnter(event) {
+            if (event.key === 'Enter') {
+                const query = event.target.value;
+                window.location.href = `/search?q=${encodeURIComponent(query)}`;
+            }
+        }
+
+        async function fetchGoldPrices() {
+            const tbody = document.getElementById('gold-price-tbody');
+            tbody.innerHTML = '<tr><td colspan="3">Đang tải...</td></tr>';
+            try {
+                const response = await fetch('https://localhost:5000/api/GoldPrice/lastest');
+                if (!response.ok) throw new Error('Lỗi khi lấy dữ liệu');
+                const data = await response.json();
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3">Không có dữ liệu</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = data.map(row => `
+                    <tr>
+                        <td>${row.goldTypeName}</td>
+                        <td>${Number(row.buyPrice).toLocaleString('vi-VN')} VNĐ</td>
+                        <td>${Number(row.sellPrice).toLocaleString('vi-VN')} VNĐ</td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="3">Lỗi: ${err.message}</td></tr>`;
+            }
+        }
+
+        async function updateGoldPrices() {
+            const status = document.getElementById('update-status');
+            status.textContent = 'Đang cập nhật...';
+            try {
+                const response = await fetch('https://localhost:5000/api/GoldPrice/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (!response.ok) throw new Error('Lỗi khi cập nhật');
+                status.textContent = 'Cập nhật thành công!';
+                await fetchGoldPrices();
+            } catch (err) {
+                status.textContent = 'Cập nhật thất bại!';
+            }
+            setTimeout(() => { status.textContent = ''; }, 3000);
+        }
+
+        document.getElementById('update-gold-btn').addEventListener('click', updateGoldPrices);
+
+        // Gọi lần đầu khi load trang
+        fetchGoldPrices();
+        // Tự động cập nhật mỗi 10 giây
+        setInterval(fetchGoldPrices, 10000);
     </script>
 </body>
 </html>
