@@ -233,7 +233,7 @@ namespace Services.Services.Implementations
             {
                 new Claim(nameof(user.Id), user.Id.ToString()),
                 new Claim(nameof(user.FullName), user.FullName),
-                new Claim(nameof(user.Role), user.Role?.Name ?? "Unknown"),
+                new Claim(ClaimTypes.Role, user.Role?.Name ?? "Unknown"),
                 new Claim(nameof(user.Username), user.Username ?? ""),
                 new Claim(nameof(user.Email), user.Email ?? ""),
                 new Claim(nameof(user.PhoneNumber), user.PhoneNumber ?? ""),
@@ -297,6 +297,9 @@ namespace Services.Services.Implementations
             if (dto == null) throw new ArgumentNullException(nameof(dto));
             if (string.IsNullOrWhiteSpace(dto.Username)) throw new ArgumentException("Username is required.", nameof(dto.Username));
             if (string.IsNullOrWhiteSpace(dto.Password)) throw new ArgumentException("Password is required.", nameof(dto.Password));
+            if (dto.Password.Length < 6) throw new ArgumentException("Password must be at least 6 characters.", nameof(dto.Password));
+            if (string.IsNullOrWhiteSpace(dto.ConfirmPassword)) throw new ArgumentException("ConfirmPassword is required.", nameof(dto.ConfirmPassword));
+            if (dto.Password != dto.ConfirmPassword) throw new ArgumentException("Password and ConfirmPassword do not match.");
             if (string.IsNullOrWhiteSpace(dto.FullName)) throw new ArgumentException("Full name is required.", nameof(dto.FullName));
             if (string.IsNullOrWhiteSpace(dto.Email) || !new EmailAddressAttribute().IsValid(dto.Email))
                 throw new ArgumentException("Invalid email format.", nameof(dto.Email));

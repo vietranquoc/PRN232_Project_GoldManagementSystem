@@ -51,10 +51,10 @@
                 success: function (response) {
                     console.log("LOGIN RESPONSE:", response); 
                     if (response.token && response.token.code) {
-                        localStorage.setItem('jwtToken', response.token.code);
+                        localStorage.setItem('accessToken', response.token.code);
                         // Giải mã JWT để lấy role
                         const payload = JSON.parse(atob(response.token.code.split('.')[1]));
-                        const role = payload["Role"];
+                        const role = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
                         console.log("ROLE:", role);
                         if (role === "Customer") {
                             window.location.href = "../Home/index.html";

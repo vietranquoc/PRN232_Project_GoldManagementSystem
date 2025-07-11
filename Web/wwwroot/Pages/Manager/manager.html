@@ -20,13 +20,13 @@
       </div>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link active" href="#"><i class="fas fa-chart-line"></i>Dashboard</a>
+          <a class="nav-link active" id="sidebar-dashboard" href="#"><i class="fas fa-chart-line"></i>Bảng điều khiển</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#"><i class="fas fa-users"></i>Account</a>
+          <a class="nav-link" id="sidebar-account" href="#"><i class="fas fa-users"></i>Tài khoản</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#"><i class="fas fa-boxes"></i>Product</a>
+          <a class="nav-link" id="sidebar-product" href="#"><i class="fas fa-boxes"></i>Sản phẩm</a>
         </li>
       </ul>
     </nav>
@@ -41,109 +41,482 @@
           <div class="dropdown">
             <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="avatar dropdown-toggle" data-bs-toggle="dropdown" alt="User"/>
             <ul class="dropdown-menu dropdown-menu-end">
-              <li><a class="dropdown-item" href="#">My Profile</a></li>
-              <li><a class="dropdown-item" href="#">My Account</a></li>
-              <li><a class="dropdown-item" href="#">My Task</a></li>
+              <li><a class="dropdown-item" href="#">Hồ sơ của tôi</a></li>
+              <li><a class="dropdown-item" href="#">Tài khoản của tôi</a></li>
+              <li><a class="dropdown-item" href="#">Công việc của tôi</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item text-danger" href="#">Logout</a></li>
+              <li><a class="dropdown-item text-danger" href="#">Đăng xuất</a></li>
             </ul>
           </div>
         </div>
       </nav>
-      <!-- Dashboard Widgets -->
-      <div class="container-fluid py-4">
-        <div class="row g-4">
-          <div class="col-md-6 col-lg-4">
-            <div class="dashboard-card">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="card-title">Sales Overview</span>
-                <i class="fas fa-chart-bar text-primary"></i>
+      <!-- Dashboard Section -->
+      <div id="dashboard-section">
+        <div class="container-fluid py-4">
+          <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+              <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="card-title">Tổng quan doanh số</span>
+                  <i class="fas fa-chart-bar text-primary"></i>
+                </div>
+                <div class="chart-placeholder">[Biểu đồ cột]</div>
               </div>
-              <div class="chart-placeholder">[Bar Chart]</div>
             </div>
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <div class="dashboard-card">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="card-title">Yearly Breakup</span>
-                <i class="fas fa-chart-pie text-success"></i>
+            <div class="col-md-6 col-lg-4">
+              <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="card-title">Phân tích theo năm</span>
+                  <i class="fas fa-chart-pie text-success"></i>
+                </div>
+                <div class="chart-placeholder">[Biểu đồ tròn]</div>
               </div>
-              <div class="chart-placeholder">[Donut Chart]</div>
             </div>
-          </div>
-          <div class="col-md-6 col-lg-4">
-            <div class="dashboard-card">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="card-title">Monthly Earnings</span>
-                <i class="fas fa-dollar-sign text-warning"></i>
-              </div>
-              <div class="fs-2 fw-bold text-success">$12,500</div>
-              <div class="text-muted">+8% from last month</div>
-            </div>
-          </div>
-        </div>
-        <div class="row g-4 mt-1">
-          <div class="col-lg-8">
-            <div class="dashboard-card">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="card-title">Recent Transactions</span>
-                <i class="fas fa-exchange-alt text-info"></i>
-              </div>
-              <div class="table-responsive">
-                <table class="table table-borderless align-middle mb-0">
-                  <thead>
-                    <tr>
-                      <th>Date</th>
-                      <th>User</th>
-                      <th>Product</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>2024-07-01</td>
-                      <td>John Doe</td>
-                      <td>Gold Ring</td>
-                      <td>$1,200</td>
-                      <td><span class="badge bg-success">Completed</span></td>
-                    </tr>
-                    <tr>
-                      <td>2024-07-01</td>
-                      <td>Jane Smith</td>
-                      <td>Necklace</td>
-                      <td>$2,500</td>
-                      <td><span class="badge bg-warning text-dark">Pending</span></td>
-                    </tr>
-                  </tbody>
-                </table>
+            <div class="col-md-6 col-lg-4">
+              <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="card-title">Thu nhập tháng</span>
+                  <i class="fas fa-dollar-sign text-warning"></i>
+                </div>
+                <div class="fs-2 fw-bold text-success">$12,500</div>
+                <div class="text-muted">+8% so với tháng trước</div>
               </div>
             </div>
           </div>
-          <div class="col-lg-4">
-            <div class="dashboard-card">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="card-title">Top Performers</span>
-                <i class="fas fa-trophy text-warning"></i>
+          <div class="row g-4 mt-1">
+            <div class="col-lg-8">
+              <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="card-title">Giao dịch gần đây</span>
+                  <i class="fas fa-exchange-alt text-info"></i>
+                </div>
+                <div class="table-responsive">
+                  <table class="table table-borderless align-middle mb-0">
+                    <thead>
+                      <tr>
+                        <th>Ngày</th>
+                        <th>Khách hàng</th>
+                        <th>Sản phẩm</th>
+                        <th>Số tiền</th>
+                        <th>Trạng thái</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>2024-07-01</td>
+                        <td>Nguyễn Văn A</td>
+                        <td>Nhẫn vàng</td>
+                        <td>1.200$</td>
+                        <td><span class="badge bg-success">Hoàn thành</span></td>
+                      </tr>
+                      <tr>
+                        <td>2024-07-01</td>
+                        <td>Trần Thị B</td>
+                        <td>Dây chuyền</td>
+                        <td>2.500$</td>
+                        <td><span class="badge bg-warning text-dark">Chờ xử lý</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
               </div>
-              <ul class="list-group list-group-flush">
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  Alice <span class="badge bg-primary rounded-pill">15 Sales</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  Bob <span class="badge bg-primary rounded-pill">12 Sales</span>
-                </li>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                  Carol <span class="badge bg-primary rounded-pill">10 Sales</span>
-                </li>
-              </ul>
+            </div>
+            <div class="col-lg-4">
+              <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="card-title">Nhân viên xuất sắc</span>
+                  <i class="fas fa-trophy text-warning"></i>
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Nguyễn Văn C <span class="badge bg-primary rounded-pill">15 giao dịch</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Lê Thị D <span class="badge bg-primary rounded-pill">12 giao dịch</span>
+                  </li>
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Phạm Văn E <span class="badge bg-primary rounded-pill">10 giao dịch</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
       </div>
+      <!-- Account Section (ẩn mặc định) -->
+      <div id="account-section" style="display:none">
+        <div class="container-fluid py-4">
+          <!-- Header -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Quản lý tài khoản</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAccountModal">
+              <i class="fas fa-plus me-2"></i>Thêm nhân viên
+            </button>
+          </div>
+
+          <!-- Filter Section -->
+          <div class="dashboard-card mb-4">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <label for="roleFilter" class="form-label">Lọc theo vai trò</label>
+                <select class="form-select" id="roleFilter">
+                  <option value="">Tất cả vai trò</option>
+                  <option value="Manager">Quản lý</option>
+                  <option value="Employee">Nhân viên</option>
+                  <option value="Customer">Khách hàng</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="statusFilter" class="form-label">Lọc theo trạng thái</label>
+                <select class="form-select" id="statusFilter">
+                  <option value="">Tất cả trạng thái</option>
+                  <option value="Active">Đang hoạt động</option>
+                  <option value="Inactive">Ngừng hoạt động</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="searchAccount" class="form-label">Tìm kiếm</label>
+                <input type="text" class="form-control" id="searchAccount" placeholder="Tìm theo tên hoặc email...">
+              </div>
+            </div>
+          </div>
+
+          <!-- Accounts Table -->
+          <div class="dashboard-card">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Mã</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Email</th>
+                    <th>Họ và tên</th>
+                    <th>Vai trò</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="accountsTableBody">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Create Account Modal -->
+        <div class="modal fade" id="createAccountModal" tabindex="-1">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Tạo tài khoản nhân viên mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <form id="createAccountForm" autocomplete="off">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label for="username" class="form-label">Tên đăng nhập *</label>
+                      <input type="text" class="form-control" id="username" required autocomplete="off" placeholder="Nhập tên đăng nhập">
+                    </div>
+                    <div class="col-md-6">
+                      <label for="email" class="form-label">Email *</label>
+                      <input type="email" class="form-control" id="email" required autocomplete="off" placeholder="Nhập email">
+                    </div>
+                    <div class="col-md-6">
+                      <label for="password" class="form-label">Mật khẩu *</label>
+                      <input type="password" class="form-control" id="password" required minlength="6" autocomplete="new-password" placeholder="Nhập mật khẩu">
+                    </div>
+                    <div class="col-md-6">
+                      <label for="confirmPassword" class="form-label">Xác nhận mật khẩu *</label>
+                      <input type="password" class="form-control" id="confirmPassword" required minlength="6" autocomplete="new-password" placeholder="Nhập lại mật khẩu">
+                    </div>
+                    <div class="col-md-6">
+                      <label for="fullName" class="form-label">Họ và tên *</label>
+                      <input type="text" class="form-control" id="fullName" required placeholder="Nhập họ và tên">
+                    </div>
+                    <div class="col-md-6">
+                      <label for="phone" class="form-label">Số điện thoại</label>
+                      <input type="tel" class="form-control" id="phone" placeholder="Nhập số điện thoại">
+                    </div>
+                    <div class="col-md-6">
+                      <label for="role" class="form-label">Vai trò</label>
+                      <input type="text" class="form-control" id="role" value="Nhân viên" disabled>
+                    </div>
+                    <div class="col-12">
+                      <label for="address" class="form-label">Địa chỉ</label>
+                      <textarea class="form-control" id="address" rows="3" placeholder="Nhập địa chỉ"></textarea>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="createAccount()">Tạo tài khoản</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit Account Modal -->
+        <div class="modal fade" id="editAccountModal" tabindex="-1">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Edit Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <form id="editAccountForm">
+                  <input type="hidden" id="editAccountId">
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label for="editUsername" class="form-label">Username *</label>
+                      <input type="text" class="form-control" id="editUsername" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="editEmail" class="form-label">Email *</label>
+                      <input type="email" class="form-control" id="editEmail" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="editPassword" class="form-label">New Password</label>
+                      <input type="password" class="form-control" id="editPassword" placeholder="Leave blank to keep current password">
+                    </div>
+                    <div class="col-md-6">
+                      <label for="editConfirmPassword" class="form-label">Confirm New Password</label>
+                      <input type="password" class="form-control" id="editConfirmPassword">
+                    </div>
+                    <div class="col-md-6">
+                      <label for="editFullName" class="form-label">Full Name *</label>
+                      <input type="text" class="form-control" id="editFullName" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="editPhone" class="form-label">Phone</label>
+                      <input type="tel" class="form-control" id="editPhone">
+                    </div>
+                    <div class="col-md-6">
+                      <label for="editRole" class="form-label">Role *</label>
+                      <select class="form-select" id="editRole" required>
+                        <option value="">Select Role</option>
+                        <option value="Manager">Manager</option>
+                        <option value="Employee">Employee</option>
+                        <option value="Customer">Customer</option>
+                      </select>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="editStatus" class="form-label">Status</label>
+                      <select class="form-select" id="editStatus">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                      </select>
+                    </div>
+                    <div class="col-12">
+                      <label for="editAddress" class="form-label">Address</label>
+                      <textarea class="form-control" id="editAddress" rows="3"></textarea>
+                    </div>
+                  </div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateAccount()">Update Account</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Product Section (ẩn mặc định) -->
+      <div id="product-section" style="display:none">
+        <!-- Nội dung quản lý product sẽ thêm ở bước sau -->
+      </div>
       <!-- End Dashboard Widgets -->
     </div>
   </div>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Chuyển đổi section khi click sidebar
+    document.getElementById('sidebar-dashboard').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('dashboard-section').style.display = '';
+      document.getElementById('account-section').style.display = 'none';
+      document.getElementById('product-section').style.display = 'none';
+      setActiveSidebar(this);
+    });
+    document.getElementById('sidebar-account').addEventListener('click', function(e) {
+      console.log('Clicked Account tab');
+      e.preventDefault();
+      document.getElementById('dashboard-section').style.display = 'none';
+      document.getElementById('account-section').style.display = '';
+      document.getElementById('product-section').style.display = 'none';
+      setActiveSidebar(this);
+      loadAccounts();
+    });
+    document.getElementById('sidebar-product').addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('dashboard-section').style.display = 'none';
+      document.getElementById('account-section').style.display = 'none';
+      document.getElementById('product-section').style.display = '';
+      setActiveSidebar(this);
+    });
+    function setActiveSidebar(activeLink) {
+      document.querySelectorAll('.sidebar .nav-link').forEach(function(link) {
+        link.classList.remove('active');
+      });
+      activeLink.classList.add('active');
+    }
+
+    // Account Management Functions
+    function loadAccounts() {
+      console.log('Start loadAccounts');
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        alert('Bạn chưa đăng nhập!');
+        return;
+      }
+      $.ajax({
+        url: 'https://localhost:5000/api/Account/all',
+        type: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token },
+        success: function(accounts) {
+          console.log('API /api/Account/all response:', accounts);
+          renderAccounts(accounts);
+        },
+        error: function(xhr) {
+          console.log('API /api/Account/all error:', xhr.status, xhr.responseText);
+          alert('Không thể lấy danh sách account! ' + (xhr.responseText || ''));
+        }
+      });
+    }
+
+    function renderAccounts(accounts) {
+      console.log('Render accounts:', accounts);
+      const tbody = document.getElementById('accountsTableBody');
+      tbody.innerHTML = '';
+      accounts.forEach(acc => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${acc.id}</td>
+          <td>${acc.username}</td>
+          <td>${acc.email}</td>
+          <td>${acc.fullName}</td>
+          <td><span class="badge ${acc.roleName === 'Manager' ? 'bg-primary' : acc.roleName === 'Employee' ? 'bg-info' : 'bg-secondary'}">${acc.roleName}</span></td>
+          <td><span class="badge ${acc.isActive ? 'bg-success' : 'bg-warning text-dark'}">${acc.isActive ? 'Active' : 'Inactive'}</span></td>
+          <td>${acc.createdDate ? acc.createdDate.split('T')[0] : ''}</td>
+          <td></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      filterAccounts();
+    }
+
+    function createAccount() {
+      const form = document.getElementById('createAccountForm');
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        alert('Bạn chưa đăng nhập!');
+        return;
+      }
+      // Validate password confirmation
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+      }
+      // Lấy role
+      const role = document.getElementById('role').value;
+      if (role !== 'Employee') {
+        alert('Chỉ tạo được Employee từ đây!');
+        return;
+      }
+      const dto = {
+        username: document.getElementById('username').value,
+        password: password,
+        confirmPassword: confirmPassword,
+        fullName: document.getElementById('fullName').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        email: document.getElementById('email').value
+      };
+      $.ajax({
+        url: 'https://localhost:5000/api/Account/create-employee',
+        type: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        data: JSON.stringify(dto),
+        success: function() {
+          const modal = bootstrap.Modal.getInstance(document.getElementById('createAccountModal'));
+          modal.hide();
+          alert('Account created successfully!');
+          form.reset();
+          loadAccounts();
+        },
+        error: function(xhr) {
+          alert('Tạo account thất bại! ' + (xhr.responseText || ''));
+        }
+      });
+    }
+
+    function editAccount(accountId) {
+      // Here you would typically fetch account data from your API
+      // For demo purposes, we'll populate with sample data
+      document.getElementById('editAccountId').value = accountId;
+      document.getElementById('editUsername').value = 'john.doe';
+      document.getElementById('editEmail').value = 'john.doe@example.com';
+      document.getElementById('editFullName').value = 'John Doe';
+      document.getElementById('editPhone').value = '+1234567890';
+      document.getElementById('editRole').value = 'Manager';
+      document.getElementById('editStatus').value = 'Active';
+      document.getElementById('editAddress').value = '123 Main St, City, State';
+      
+      // Show the edit modal
+      const editModal = new bootstrap.Modal(document.getElementById('editAccountModal'));
+      editModal.show();
+    }
+
+    function updateAccount() {
+      // Placeholder: cần endpoint update ở backend
+      alert('Chức năng cập nhật account cần bổ sung endpoint API.');
+    }
+
+    function deleteAccount(accountId) {
+      // Placeholder: cần endpoint xóa ở backend
+      alert('Chức năng xóa account cần bổ sung endpoint API.');
+    }
+
+    // Filter and search functionality
+    document.getElementById('roleFilter').addEventListener('change', filterAccounts);
+    document.getElementById('statusFilter').addEventListener('change', filterAccounts);
+    document.getElementById('searchAccount').addEventListener('input', filterAccounts);
+
+    function filterAccounts() {
+      const roleFilter = document.getElementById('roleFilter').value;
+      const statusFilter = document.getElementById('statusFilter').value;
+      const searchTerm = document.getElementById('searchAccount').value.toLowerCase();
+      
+      const rows = document.querySelectorAll('#accountsTableBody tr');
+      
+      rows.forEach(row => {
+        const role = row.cells[4].textContent.trim();
+        const status = row.cells[5].textContent.trim();
+        const name = row.cells[3].textContent.toLowerCase();
+        const email = row.cells[2].textContent.toLowerCase();
+        
+        const matchesRole = !roleFilter || role.includes(roleFilter);
+        const matchesStatus = !statusFilter || status.includes(statusFilter);
+        const matchesSearch = !searchTerm || name.includes(searchTerm) || email.includes(searchTerm);
+        
+        row.style.display = matchesRole && matchesStatus && matchesSearch ? '' : 'none';
+      });
+    }
+
+    // Clear form when modal is closed
+    document.getElementById('createAccountModal').addEventListener('hidden.bs.modal', function () {
+      document.getElementById('createAccountForm').reset();
+    });
+  </script>
 </body>
 </html>
