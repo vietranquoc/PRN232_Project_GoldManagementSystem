@@ -8,6 +8,7 @@
     <link href="../../css/authen.css" rel="stylesheet" />
 </head>
 <body>
+    <a href="../Home/index.html" class="btn btn-secondary btn-home-fixed">&larr; Về trang chủ</a>
     <div class="login-container">
         <div class="user-icon">
             <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -29,7 +30,7 @@
             <button type="submit" class="btn btn-primary">Đăng nhập</button>
             <div class="link-container">
                 <a href="register.html" class="signup-a">Đăng ký</a>
-                <a href="#" class="forgot-password">Quên mật khẩu?</a>
+                <a href="forgot-password.html" class="forgot-password">Quên mật khẩu?</a>
             </div>
         </form>
         <div id="loginMessage" class="alert d-none"></div>
@@ -40,7 +41,7 @@
         $("#loginForm").submit(function (e) {
             e.preventDefault();
             $.ajax({
-                url: "http://localhost:5000/api/account/login",
+                url: "https://localhost:5000/api/Account/login",
                 type: "POST",
                 contentType: "application/json",
                 data: JSON.stringify({
@@ -48,14 +49,30 @@
                     password: $("#password").val()
                 }),
                 success: function (response) {
+                    console.log("LOGIN RESPONSE:", response); 
+                    if (response.token && response.token.code) {
+                        localStorage.setItem('jwtToken', response.token.code);
+                        // Giải mã JWT để lấy role
+                        const payload = JSON.parse(atob(response.token.code.split('.')[1]));
+                        const role = payload["Role"];
+                        console.log("ROLE:", role);
+                        if (role === "Customer") {
+                            window.location.href = "../Home/index.html";
+                        } else if (role === "Manager" || role === "Employee") {
+                            window.location.href = "../Manager/manager.html";
+                        } else {
+                            $("#loginMessage")
+                                .removeClass("d-none alert-success")
+                                .addClass("alert-danger")
+                                .text("Không xác định được vai trò người dùng.");
+                            return;
+                        }
+                        return;
+                    }
                     $("#loginMessage")
                         .removeClass("d-none alert-danger")
                         .addClass("alert-success")
                         .text("Đăng nhập thành công!");
-                    setTimeout(() => {
-                        // Redirect or handle login success
-                        // window.location.href = "/dashboard";
-                    }, 2000);
                 },
                 error: function (xhr) {
                     $("#loginMessage")

@@ -226,3 +226,22 @@ footer a {
         max-width: 50%;
     }
 }
+
+.btn-home-fixed {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1050;
+    border-radius: 24px;
+    padding: 8px 20px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+@media (max-width: 576px) {
+    .btn-home-fixed {
+        top: 10px;
+        left: 10px;
+        padding: 6px 12px;
+        font-size: 0.95rem;
+    }
+}

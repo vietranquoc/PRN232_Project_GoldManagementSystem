@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manager Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,500,700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../../css/manager.css" />
+</head>
+<body>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="sidebar p-3 d-flex flex-column">
+      <div class="mb-4 text-center">
+        <span class="navbar-brand m-0 p-0">
+            <i class="fas fa-gem me-2"></i>GoldTrack
+        </span>
+      </div>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link active" href="#"><i class="fas fa-chart-line"></i>Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"><i class="fas fa-users"></i>Account</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"><i class="fas fa-boxes"></i>Product</a>
+        </li>
+      </ul>
+    </nav>
+    <!-- Main Content -->
+    <div class="flex-grow-1">
+      <!-- Top Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light px-4 py-2">
+        <a class="navbar-brand" href="#">
+            <i class="fas fa-gem me-2"></i>GoldTrack
+        </a>
+        <div class="ms-auto d-flex align-items-center">
+          <div class="dropdown">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="avatar dropdown-toggle" data-bs-toggle="dropdown" alt="User"/>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#">My Profile</a></li>
+              <li><a class="dropdown-item" href="#">My Account</a></li>
+              <li><a class="dropdown-item" href="#">My Task</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="#">Logout</a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <!-- Dashboard Widgets -->
+      <div class="container-fluid py-4">
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-4">
+            <div class="dashboard-card">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="card-title">Sales Overview</span>
+                <i class="fas fa-chart-bar text-primary"></i>
+              </div>
+              <div class="chart-placeholder">[Bar Chart]</div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="dashboard-card">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="card-title">Yearly Breakup</span>
+                <i class="fas fa-chart-pie text-success"></i>
+              </div>
+              <div class="chart-placeholder">[Donut Chart]</div>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <div class="dashboard-card">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="card-title">Monthly Earnings</span>
+                <i class="fas fa-dollar-sign text-warning"></i>
+              </div>
+              <div class="fs-2 fw-bold text-success">$12,500</div>
+              <div class="text-muted">+8% from last month</div>
+            </div>
+          </div>
+        </div>
+        <div class="row g-4 mt-1">
+          <div class="col-lg-8">
+            <div class="dashboard-card">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="card-title">Recent Transactions</span>
+                <i class="fas fa-exchange-alt text-info"></i>
+              </div>
+              <div class="table-responsive">
+                <table class="table table-borderless align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>User</th>
+                      <th>Product</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>2024-07-01</td>
+                      <td>John Doe</td>
+                      <td>Gold Ring</td>
+                      <td>$1,200</td>
+                      <td><span class="badge bg-success">Completed</span></td>
+                    </tr>
+                    <tr>
+                      <td>2024-07-01</td>
+                      <td>Jane Smith</td>
+                      <td>Necklace</td>
+                      <td>$2,500</td>
+                      <td><span class="badge bg-warning text-dark">Pending</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="dashboard-card">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="card-title">Top Performers</span>
+                <i class="fas fa-trophy text-warning"></i>
+              </div>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Alice <span class="badge bg-primary rounded-pill">15 Sales</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Bob <span class="badge bg-primary rounded-pill">12 Sales</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  Carol <span class="badge bg-primary rounded-pill">10 Sales</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End Dashboard Widgets -->
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

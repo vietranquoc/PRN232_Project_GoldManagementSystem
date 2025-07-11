@@ -15,6 +15,9 @@ namespace BusinessObjects.DBContext
         public DbSet<GoldType> GoldTypes { get; set; }
         public DbSet<GoldPrice> GoldPrices { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -124,6 +127,42 @@ namespace BusinessObjects.DBContext
             modelBuilder.Entity<GoldType>()
                 .HasIndex(gt => new { gt.Name, gt.Karat, gt.PriceType })
                 .IsUnique(); // tránh bị trùng loại vàng
+
+            // Cấu hình Category
+            modelBuilder.Entity<Category>()
+                .Property(c => c.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            // Cấu hình Product
+            modelBuilder.Entity<Product>()
+                .Property(p => p.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            modelBuilder.Entity<Product>()
+                .Property(p => p.Price)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Category)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId);
+
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.GoldType)
+                .WithMany()
+                .HasForeignKey(p => p.GoldTypeId);
+
+            // Cấu hình ProductImage
+            modelBuilder.Entity<ProductImage>()
+                .Property(pi => pi.ImageUrl)
+                .IsRequired();
+
+            modelBuilder.Entity<ProductImage>()
+                .HasOne(pi => pi.Product)
+                .WithMany(p => p.ProductImages)
+                .HasForeignKey(pi => pi.ProductId);
 
 
 
