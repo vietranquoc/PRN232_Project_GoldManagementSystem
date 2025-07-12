@@ -49,32 +49,60 @@
                     password: $("#password").val()
                 }),
                 success: function (response) {
-                    console.log("LOGIN RESPONSE:", response); 
+                    console.log("LOGIN RESPONSE:", response);
+                    let token;
+                    // Kiểm tra các định dạng phản hồi có thể có
                     if (response.token && response.token.code) {
-                        localStorage.setItem('accessToken', response.token.code);
-                        // Giải mã JWT để lấy role
-                        const payload = JSON.parse(atob(response.token.code.split('.')[1]));
+                        token = response.token.code;
+                    } else if (response.accessToken) {
+                        token = response.accessToken;
+                    } else if (typeof response === 'string') {
+                        token = response;
+                    } else {
+                        $("#loginMessage")
+                            .removeClass("d-none alert-success")
+                            .addClass("alert-danger")
+                            .text("Phản hồi API không chứa token hợp lệ.");
+                        return;
+                    }
+
+                    console.log("Token lưu vào localStorage:", token);
+                    localStorage.setItem('accessToken', token);
+
+                    // Giải mã JWT để lấy role
+                    try {
+                        const payload = JSON.parse(atob(token.split('.')[1]));
                         const role = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
                         console.log("ROLE:", role);
-                        if (role === "Customer") {
+                        if (role && role.toLowerCase() === "customer") {
                             window.location.href = "../Home/index.html";
-                        } else if (role === "Manager" || role === "Employee") {
+                        } else if (role && (role.toLowerCase() === "manager" || role.toLowerCase() === "employee")) {
                             window.location.href = "../Manager/manager.html";
                         } else {
                             $("#loginMessage")
                                 .removeClass("d-none alert-success")
                                 .addClass("alert-danger")
                                 .text("Không xác định được vai trò người dùng.");
+                            localStorage.removeItem('accessToken');
                             return;
                         }
+                    } catch (e) {
+                        console.error("Lỗi giải mã token:", e.message);
+                        $("#loginMessage")
+                            .removeClass("d-none alert-success")
+                            .addClass("alert-danger")
+                            .text("Token không hợp lệ: " + e.message);
+                        localStorage.removeItem('accessToken');
                         return;
                     }
+
                     $("#loginMessage")
                         .removeClass("d-none alert-danger")
                         .addClass("alert-success")
                         .text("Đăng nhập thành công!");
                 },
                 error: function (xhr) {
+                    console.error("Lỗi đăng nhập:", xhr.responseText);
                     $("#loginMessage")
                         .removeClass("d-none alert-success")
                         .addClass("alert-danger")

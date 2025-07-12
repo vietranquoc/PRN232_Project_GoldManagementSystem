@@ -1,0 +1,14 @@
+using System;
+
+namespace BusinessObjects.DTOs
+{
+    public class UpdateGoldPriceDTO
+    {
+        public int Id { get; set; }
+        public int GoldTypeId { get; set; }
+        public decimal BuyPrice { get; set; }
+        public decimal SellPrice { get; set; }
+        public DateTime RecordedAt { get; set; }
+        public bool IsActive { get; set; }
+    }
+} 

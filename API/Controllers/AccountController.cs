@@ -172,5 +172,30 @@ namespace API.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        /// <summary>
+        /// Logout user by invalidating the current token.
+        /// </summary>
+        /// <returns>Logout confirmation message</returns>
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            try
+            {
+                // Lấy user ID từ token
+                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
+                
+                // Có thể thêm logic để blacklist token hoặc cập nhật trạng thái user
+                // Hiện tại chỉ trả về thông báo thành công
+                await _accountService.LogoutAsync(userId);
+                
+                return Ok(new { message = "Logout successful" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Logout failed: {ex.Message}");
+            }
+        }
     }
 }

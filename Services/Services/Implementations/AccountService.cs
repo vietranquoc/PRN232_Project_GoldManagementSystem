@@ -321,5 +321,26 @@ namespace Services.Services.Implementations
                 throw new ArgumentException("Invalid email format.", nameof(dto.Email));
             if (string.IsNullOrWhiteSpace(dto.NewPassword)) throw new ArgumentException("New password is required.", nameof(dto.NewPassword));
         }
+
+        public async Task LogoutAsync(int userId)
+        {
+            try
+            {
+                // Có thể thêm logic để:
+                // 1. Blacklist token hiện tại
+                // 2. Cập nhật trạng thái đăng nhập của user
+                // 3. Ghi log đăng xuất
+                
+                _logger.LogInformation("User logged out successfully: UserId {UserId}", userId);
+                
+                // Hiện tại chỉ log thông tin đăng xuất
+                // Trong tương lai có thể mở rộng để blacklist token
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during logout for user ID: {UserId}", userId);
+                throw;
+            }
+        }
     }
 }

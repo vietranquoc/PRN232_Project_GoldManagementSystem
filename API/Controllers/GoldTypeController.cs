@@ -1,4 +1,4 @@
-﻿using BusinessObjects.DTOs;
+using BusinessObjects.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
@@ -7,10 +7,10 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GoldPriceController : ControllerBase
+    public class GoldTypeController : ControllerBase
     {
-        private readonly IGoldPriceService _service;
-        public GoldPriceController(IGoldPriceService service)
+        private readonly IGoldTypeService _service;
+        public GoldTypeController(IGoldTypeService service)
         {
             _service = service;
         }
@@ -26,17 +26,9 @@ namespace API.Controllers
             return Ok(item);
         }
 
-        [HttpGet("latest/{goldTypeId}")]
-        public async Task<IActionResult> GetLatestByGoldTypeId(int goldTypeId)
-        {
-            var item = await _service.GetLatestByGoldTypeIdAsync(goldTypeId);
-            if (item == null) return NotFound();
-            return Ok(item);
-        }
-
         [HttpPost]
         [Authorize(Roles = "Manager,Employee")]
-        public async Task<IActionResult> Create([FromBody] CreateGoldPriceDTO dto)
+        public async Task<IActionResult> Create([FromBody] CreateGoldTypeDTO dto)
         {
             var result = await _service.CreateAsync(dto);
             if (!result) return BadRequest();
@@ -45,7 +37,7 @@ namespace API.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Manager,Employee")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateGoldPriceDTO dto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateGoldTypeDTO dto)
         {
             if (id != dto.Id) return BadRequest();
             var updated = await _service.UpdateAsync(dto);
@@ -62,4 +54,4 @@ namespace API.Controllers
             return Ok(deleted);
         }
     }
-}
+} 

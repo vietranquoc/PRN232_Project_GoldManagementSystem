@@ -2,6 +2,7 @@ using BusinessObjects.EntityModel;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using BusinessObjects.DTOs;
 
 namespace API.Controllers
 {
@@ -16,39 +17,42 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
+        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllProductsAsync());
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var item = await _service.GetByIdAsync(id);
+            var item = await _service.GetProductByIdAsync(id);
             if (item == null) return NotFound();
             return Ok(item);
         }
 
-        [Authorize(Roles = "Manager,Employee")]
         [HttpPost]
-        public async Task<IActionResult> Create(Product entity)
+        [Authorize(Roles = "Manager,Employee")]
+        public async Task<IActionResult> Create([FromBody] CreateProductDTO dto)
         {
-            var created = await _service.AddAsync(entity);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var result = await _service.CreateProductAsync(dto);
+            if (!result) return BadRequest();
+            return Ok(result);
         }
 
-        [Authorize(Roles = "Manager,Employee")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Product entity)
+        [Authorize(Roles = "Manager,Employee")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateProductDTO dto)
         {
-            if (id != entity.Id) return BadRequest();
-            await _service.UpdateAsync(entity);
-            return NoContent();
+            if (id != dto.Id) return BadRequest();
+            var updated = await _service.UpdateProductAsync(dto);
+            if (updated == null) return NotFound();
+            return Ok(updated);
         }
 
-        [Authorize(Roles = "Manager,Employee")]
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Manager,Employee")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id);
-            return NoContent();
+            var deleted = await _service.DeleteProductAsync(id);
+            if (!deleted) return NotFound();
+            return Ok(deleted);
         }
     }
 } 

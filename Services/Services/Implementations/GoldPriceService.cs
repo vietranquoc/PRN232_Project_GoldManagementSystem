@@ -1,86 +1,121 @@
 ﻿using BusinessObjects.DTOs;
 using BusinessObjects.EntityModel;
-using Microsoft.Extensions.Configuration;
+using BusinessObjects.ViewModels;
 using Repositories.Infrastructure.Interfaces;
 using Services.Services.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Services.Services.Implementations
 {
     public class GoldPriceService : IGoldPriceService
     {
-        private readonly IGoldPriceRepository _goldPriceRepository;
-        private readonly IGoldTypeRepository _goldTypeRepository;
-
-        public GoldPriceService(IGoldPriceRepository goldPriceRepository, IGoldTypeRepository goldTypeRepository)
+        private readonly IGoldPriceRepository _repo;
+        public GoldPriceService(IGoldPriceRepository repo)
         {
-            _goldPriceRepository = goldPriceRepository;
-            _goldTypeRepository = goldTypeRepository;
+            _repo = repo;
         }
 
-        public async Task AddManualGoldPriceAsync(ManualGoldPriceDTO dto)
+        public async Task<IEnumerable<GoldPriceViewModel>> GetAllAsync()
         {
-            await SaveGoldPriceAsync(
-                name: dto.Name,
-                karat: dto.Karat,
-                priceType: dto.PriceType,
-                description: dto.Description,
-                buy: dto.BuyPrice,
-                sell: dto.SellPrice,
-                recordedAt: dto.RecordedAt ?? DateTime.Now
-            );
-        }
-
-        private async Task SaveGoldPriceAsync(string name, int? karat, string priceType, string description, decimal buy, decimal sell, DateTime recordedAt)
-        {
-            try
+            var prices = await _repo.GetAllAsync();
+            return prices.Select(p => new GoldPriceViewModel
             {
-                var goldType = await _goldTypeRepository.GetByConditionsAsync(name, karat, priceType);
-                if (goldType == null)
-                {
-                    goldType = new BusinessObjects.EntityModel.GoldType
-                    {
-                        Name = name,
-                        Karat = karat,
-                        PriceType = priceType,
-                        Description = description
-                    };
-                    _goldTypeRepository.Insert(goldType);
-                    await _goldTypeRepository.SaveChangesAsync();
-                    Console.WriteLine($"Inserted GoldType: Name={name}, Karat={karat}, PriceType={priceType}");
-                }
-
-                var goldPrice = new BusinessObjects.EntityModel.GoldPrice
-                {
-                    GoldTypeId = goldType.Id,
-                    BuyPrice = buy,
-                    SellPrice = sell,
-                    RecordedAt = recordedAt
-                };
-
-                _goldPriceRepository.Insert(goldPrice);
-                await _goldPriceRepository.SaveChangesAsync();
-                Console.WriteLine($"Inserted GoldPrice: GoldTypeId={goldType.Id}, Buy={buy}, Sell={sell}, Time={recordedAt}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error saving gold price: {ex}");
-                throw;
-            }
-        }
-
-        public async Task<IEnumerable<GoldPriceResponseDTO>> GetLatestGoldPricesAsync()
-        {
-            var latestPrices = await _goldPriceRepository.GetLatestPricesAsync();
-
-            return latestPrices.Select(gp => new GoldPriceResponseDTO
-            {
-                GoldTypeId = gp.GoldTypeId,
-                GoldTypeName = gp.GoldType?.Name ?? "",
-                Description = gp.GoldType?.Description ?? "",
-                BuyPrice = gp.BuyPrice,
-                SellPrice = gp.SellPrice,
-                RecordedAt = gp.RecordedAt
+                Id = p.Id,
+                GoldTypeId = p.GoldTypeId,
+                BuyPrice = p.BuyPrice,
+                SellPrice = p.SellPrice,
+                RecordedAt = p.RecordedAt,
+                IsActive = p.IsActive,
+                CreatedDate = p.CreatedDate,
+                UpdatedDate = p.UpdatedDate
             });
+        }
+
+        public async Task<GoldPriceViewModel> GetByIdAsync(int id)
+        {
+            var p = await _repo.GetByIdAsync(id);
+            if (p == null) return null;
+            return new GoldPriceViewModel
+            {
+                Id = p.Id,
+                GoldTypeId = p.GoldTypeId,
+                BuyPrice = p.BuyPrice,
+                SellPrice = p.SellPrice,
+                RecordedAt = p.RecordedAt,
+                IsActive = p.IsActive,
+                CreatedDate = p.CreatedDate,
+                UpdatedDate = p.UpdatedDate
+            };
+        }
+
+        public async Task<bool> CreateAsync(CreateGoldPriceDTO dto)
+        {
+            var entity = new GoldPrice
+            {
+                GoldTypeId = dto.GoldTypeId,
+                BuyPrice = dto.BuyPrice,
+                SellPrice = dto.SellPrice,
+                RecordedAt = dto.RecordedAt
+            };
+            _repo.Insert(entity);
+            await _repo.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<GoldPriceViewModel> UpdateAsync(UpdateGoldPriceDTO dto)
+        {
+            var entity = await _repo.GetByIdAsync(dto.Id);
+            if (entity == null) return null;
+            entity.GoldTypeId = dto.GoldTypeId;
+            entity.BuyPrice = dto.BuyPrice;
+            entity.SellPrice = dto.SellPrice;
+            entity.RecordedAt = dto.RecordedAt;
+            entity.IsActive = dto.IsActive;
+            _repo.Update(entity);
+            await _repo.SaveChangesAsync();
+            return new GoldPriceViewModel
+            {
+                Id = entity.Id,
+                GoldTypeId = entity.GoldTypeId,
+                BuyPrice = entity.BuyPrice,
+                SellPrice = entity.SellPrice,
+                RecordedAt = entity.RecordedAt,
+                IsActive = entity.IsActive,
+                CreatedDate = entity.CreatedDate,
+                UpdatedDate = entity.UpdatedDate
+            };
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var entity = await _repo.GetByIdAsync(id);
+            if (entity == null) return false;
+            _repo.Remove(entity);
+            await _repo.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<GoldPriceViewModel> GetLatestByGoldTypeIdAsync(int goldTypeId)
+        {
+            var prices = await _repo.GetAllAsync();
+            var latest = prices
+                .Where(p => p.GoldTypeId == goldTypeId)
+                .OrderByDescending(p => p.RecordedAt)
+                .FirstOrDefault();
+            if (latest == null) return null;
+            return new GoldPriceViewModel
+            {
+                Id = latest.Id,
+                GoldTypeId = latest.GoldTypeId,
+                BuyPrice = latest.BuyPrice,
+                SellPrice = latest.SellPrice,
+                RecordedAt = latest.RecordedAt,
+                IsActive = latest.IsActive,
+                CreatedDate = latest.CreatedDate,
+                UpdatedDate = latest.UpdatedDate
+            };
         }
     }
 }

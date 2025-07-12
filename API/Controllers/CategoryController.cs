@@ -2,6 +2,7 @@ using BusinessObjects.EntityModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
+using BusinessObjects.DTOs;
 
 namespace API.Controllers
 {
@@ -16,39 +17,42 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
+        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllCategories());
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var item = await _service.GetByIdAsync(id);
+            var item = await _service.GetCategoryById(id);
             if (item == null) return NotFound();
             return Ok(item);
         }
 
         [HttpPost]
         [Authorize(Roles = "Manager,Employee")]
-        public async Task<IActionResult> Create(Category entity)
+        public async Task<IActionResult> Create([FromBody] CreateCategoryDTO dto)
         {
-            var created = await _service.AddAsync(entity);
-            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+            var result = await _service.CreateNewCategory(dto);
+            if (!result) return BadRequest();
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Manager,Employee")]
-        public async Task<IActionResult> Update(int id, Category entity)
+        public async Task<IActionResult> Update(int id,[FromBody] UpdateCategoryDTO dto)
         {
-            if (id != entity.Id) return BadRequest();
-            await _service.UpdateAsync(entity);
-            return NoContent();
+            if (id != dto.Id) return BadRequest();
+            var updated = await _service.UpdateCategory(dto);
+            if (updated == null) return NotFound();
+            return Ok(updated);
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Manager,Employee")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id);
-            return NoContent();
+            var deleted = await _service.DeleteCategory(id);
+            if (!deleted) return NotFound();
+            return Ok(deleted);
         }
     }
 } 
