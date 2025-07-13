@@ -36,6 +36,24 @@ namespace API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("multiple")]
+        [Authorize(Roles = "Manager,Employee")]
+        public async Task<IActionResult> CreateMultiple([FromBody] CreateMultipleProductImagesDTO dto)
+        {
+            try
+            {
+                Console.WriteLine("[CreateMultiple] Payload: " + System.Text.Json.JsonSerializer.Serialize(dto));
+                var result = await _service.CreateMultipleAsync(dto);
+                if (!result) return BadRequest();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("[CreateMultiple] Exception: " + ex.ToString());
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPut("{id}")]
         [Authorize(Roles = "Manager,Employee")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateProductImageDTO dto)

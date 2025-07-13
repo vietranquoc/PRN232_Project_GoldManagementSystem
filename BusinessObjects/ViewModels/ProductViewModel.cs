@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace BusinessObjects.ViewModels
 {
@@ -13,5 +14,6 @@ namespace BusinessObjects.ViewModels
         public bool IsActive { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
+        public List<ProductImageViewModel> Images { get; set; } = new();
     }
 } 

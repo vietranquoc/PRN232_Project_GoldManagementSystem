@@ -75,6 +75,7 @@ header {
     color: #FFD700 !important;
 }
 
+
 .nav-link {
     color: #333 !important;
     font-weight: 500;
@@ -84,10 +85,17 @@ header {
         color: #FFD700 !important;
     }
 
+
+.navbar-nav .dropdown:hover > .dropdown-menu {
+    display: block;
+    margin-top: 0;
+}
+
 .navbar-nav .dropdown-menu {
     border-radius: 5px;
     border: 1px solid #ccc;
 }
+
 
 .dropdown-toggle::after {
     transition: transform 0.3s;

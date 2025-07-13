@@ -231,6 +231,7 @@ namespace Services.Services.Implementations
         {
             var claims = new[]
             {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // Thêm dòng này để backend lấy được UserId
                 new Claim(nameof(user.Id), user.Id.ToString()),
                 new Claim(nameof(user.FullName), user.FullName),
                 new Claim(ClaimTypes.Role, user.Role?.Name ?? "Unknown"),

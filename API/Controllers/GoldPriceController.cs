@@ -16,22 +16,47 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                var result = await _service.GetAllAsync();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi server khi lấy danh sách giá vàng: " + ex.Message);
+            }
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var item = await _service.GetByIdAsync(id);
-            if (item == null) return NotFound();
-            return Ok(item);
+            try
+            {
+                var item = await _service.GetByIdAsync(id);
+                if (item == null) return NotFound("Không tìm thấy giá vàng");
+                return Ok(item);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi server khi lấy thông tin giá vàng: " + ex.Message);
+            }
         }
 
         [HttpGet("latest/{goldTypeId}")]
         public async Task<IActionResult> GetLatestByGoldTypeId(int goldTypeId)
         {
-            var item = await _service.GetLatestByGoldTypeIdAsync(goldTypeId);
-            if (item == null) return NotFound();
-            return Ok(item);
+            try
+            {
+                var item = await _service.GetLatestByGoldTypeIdAsync(goldTypeId);
+                if (item == null) return NotFound("Không tìm thấy giá vàng cho loại vàng này");
+                return Ok(item);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Lỗi server khi lấy giá vàng mới nhất: " + ex.Message);
+            }
         }
 
         [HttpPost]

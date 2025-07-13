@@ -23,12 +23,9 @@ namespace Services.Services.Implementations
             return images.Where(i => i.ProductId == productId).Select(i => new ProductImageViewModel
             {
                 Id = i.Id,
-                ProductId = i.ProductId,
                 ImageUrl = i.ImageUrl,
                 IsMain = i.IsMain,
-                IsActive = i.IsActive,
-                CreatedDate = i.CreatedDate,
-                UpdatedDate = i.UpdatedDate
+                IsActive = i.IsActive
             });
         }
 
@@ -39,12 +36,9 @@ namespace Services.Services.Implementations
             return new ProductImageViewModel
             {
                 Id = i.Id,
-                ProductId = i.ProductId,
                 ImageUrl = i.ImageUrl,
                 IsMain = i.IsMain,
-                IsActive = i.IsActive,
-                CreatedDate = i.CreatedDate,
-                UpdatedDate = i.UpdatedDate
+                IsActive = i.IsActive
             };
         }
 
@@ -61,6 +55,26 @@ namespace Services.Services.Implementations
             return true;
         }
 
+        public async Task<bool> CreateMultipleAsync(CreateMultipleProductImagesDTO dto)
+        {
+            var entities = new List<ProductImage>();
+            
+            foreach (var image in dto.Images)
+            {
+                var entity = new ProductImage
+                {
+                    ProductId = dto.ProductId,
+                    ImageUrl = image.ImageUrl,
+                    IsMain = image.IsMain
+                };
+                entities.Add(entity);
+            }
+            
+            _repo.Insert(entities);
+            await _repo.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<ProductImageViewModel> UpdateAsync(UpdateProductImageDTO dto)
         {
             var entity = await _repo.GetByIdAsync(dto.Id);
@@ -73,12 +87,9 @@ namespace Services.Services.Implementations
             return new ProductImageViewModel
             {
                 Id = entity.Id,
-                ProductId = entity.ProductId,
                 ImageUrl = entity.ImageUrl,
                 IsMain = entity.IsMain,
-                IsActive = entity.IsActive,
-                CreatedDate = entity.CreatedDate,
-                UpdatedDate = entity.UpdatedDate
+                IsActive = entity.IsActive
             };
         }
 

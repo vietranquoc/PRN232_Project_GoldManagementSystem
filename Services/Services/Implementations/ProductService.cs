@@ -12,9 +12,14 @@ namespace Services.Services.Implementations
     public class ProductService : IProductService
     {
         private readonly IProductRepository _repo;
-        public ProductService(IProductRepository repo)
+        private readonly ICategoryService _categoryService;
+        private readonly IGoldTypeService _goldTypeService;
+        
+        public ProductService(IProductRepository repo, ICategoryService categoryService, IGoldTypeService goldTypeService)
         {
             _repo = repo;
+            _categoryService = categoryService;
+            _goldTypeService = goldTypeService;
         }
 
         public async Task<IEnumerable<ProductViewModel>> GetAllProductsAsync()
@@ -30,7 +35,14 @@ namespace Services.Services.Implementations
                 Quantity = p.Quantity,
                 IsActive = p.IsActive,
                 CreatedDate = p.CreatedDate,
-                UpdatedDate = p.UpdatedDate
+                UpdatedDate = p.UpdatedDate,
+                Images = p.ProductImages != null ? p.ProductImages.Where(img => img.IsActive).Select(img => new ProductImageViewModel
+                {
+                    Id = img.Id,
+                    ImageUrl = img.ImageUrl,
+                    IsMain = img.IsMain,
+                    IsActive = img.IsActive
+                }).ToList() : new List<ProductImageViewModel>()
             });
         }
 
@@ -48,12 +60,29 @@ namespace Services.Services.Implementations
                 Quantity = p.Quantity,
                 IsActive = p.IsActive,
                 CreatedDate = p.CreatedDate,
-                UpdatedDate = p.UpdatedDate
+                UpdatedDate = p.UpdatedDate,
+                Images = p.ProductImages != null ? p.ProductImages.Where(img => img.IsActive).Select(img => new ProductImageViewModel
+                {
+                    Id = img.Id,
+                    ImageUrl = img.ImageUrl,
+                    IsMain = img.IsMain,
+                    IsActive = img.IsActive
+                }).ToList() : new List<ProductImageViewModel>()
             };
         }
 
-        public async Task<bool> CreateProductAsync(CreateProductDTO dto)
+        public async Task<int> CreateProductAsync(CreateProductDTO dto)
         {
+            // Validate CategoryId exists
+            var category = await _categoryService.GetCategoryById(dto.CategoryId);
+            if (category == null)
+                throw new ArgumentException($"Category with ID {dto.CategoryId} does not exist");
+            
+            // Validate GoldTypeId exists
+            var goldType = await _goldTypeService.GetByIdAsync(dto.GoldTypeId);
+            if (goldType == null)
+                throw new ArgumentException($"GoldType with ID {dto.GoldTypeId} does not exist");
+            
             var entity = new Product
             {
                 Name = dto.Name,
@@ -65,16 +94,34 @@ namespace Services.Services.Implementations
             };
             _repo.Insert(entity);
             await _repo.SaveChangesAsync();
-            return true;
+            return entity.Id; // Trả về productId
         }
 
         public async Task<ProductViewModel> UpdateProductAsync(UpdateProductDTO dto)
         {
             var entity = await _repo.GetByIdAsync(dto.Id);
             if (entity == null) return null;
+            
+            // Validate CategoryId exists if changed
+            if (entity.CategoryId != dto.CategoryId)
+            {
+                var category = await _categoryService.GetCategoryById(dto.CategoryId);
+                if (category == null)
+                    throw new ArgumentException($"Category with ID {dto.CategoryId} does not exist");
+            }
+            
+            // Validate GoldTypeId exists if changed
+            if (entity.GoldTypeId != dto.GoldTypeId)
+            {
+                var goldType = await _goldTypeService.GetByIdAsync(dto.GoldTypeId);
+                if (goldType == null)
+                    throw new ArgumentException($"GoldType with ID {dto.GoldTypeId} does not exist");
+            }
+            
             entity.Name = dto.Name;
             entity.Description = dto.Description;
             entity.CategoryId = dto.CategoryId;
+            entity.GoldTypeId = dto.GoldTypeId;
             entity.Price = dto.Price;
             entity.Quantity = dto.Quantity;
             entity.IsActive = dto.IsActive;
@@ -90,7 +137,14 @@ namespace Services.Services.Implementations
                 Quantity = entity.Quantity,
                 IsActive = entity.IsActive,
                 CreatedDate = entity.CreatedDate,
-                UpdatedDate = entity.UpdatedDate
+                UpdatedDate = entity.UpdatedDate,
+                Images = entity.ProductImages != null ? entity.ProductImages.Where(img => img.IsActive).Select(img => new ProductImageViewModel
+                {
+                    Id = img.Id,
+                    ImageUrl = img.ImageUrl,
+                    IsMain = img.IsMain,
+                    IsActive = img.IsActive
+                }).ToList() : new List<ProductImageViewModel>()
             };
         }
 

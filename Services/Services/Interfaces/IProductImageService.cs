@@ -10,6 +10,7 @@ namespace Services.Services.Interfaces
         Task<IEnumerable<ProductImageViewModel>> GetImagesByProductIdAsync(int productId);
         Task<ProductImageViewModel> GetByIdAsync(int id);
         Task<bool> CreateAsync(CreateProductImageDTO dto);
+        Task<bool> CreateMultipleAsync(CreateMultipleProductImagesDTO dto);
         Task<ProductImageViewModel> UpdateAsync(UpdateProductImageDTO dto);
         Task<bool> DeleteAsync(int id);
     }

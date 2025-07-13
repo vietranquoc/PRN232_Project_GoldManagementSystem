@@ -31,19 +31,42 @@ namespace API.Controllers
         [Authorize(Roles = "Manager,Employee")]
         public async Task<IActionResult> Create([FromBody] CreateProductDTO dto)
         {
-            var result = await _service.CreateProductAsync(dto);
-            if (!result) return BadRequest();
-            return Ok(result);
+            try
+            {
+                var productId = await _service.CreateProductAsync(dto);
+                if (productId <= 0) return BadRequest("Không thể tạo sản phẩm");
+                return Ok(productId);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Lỗi server khi tạo sản phẩm");
+            }
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Manager,Employee")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateProductDTO dto)
         {
-            if (id != dto.Id) return BadRequest();
-            var updated = await _service.UpdateProductAsync(dto);
-            if (updated == null) return NotFound();
-            return Ok(updated);
+            if (id != dto.Id) return BadRequest("ID không khớp");
+            
+            try
+            {
+                var updated = await _service.UpdateProductAsync(dto);
+                if (updated == null) return NotFound("Không tìm thấy sản phẩm");
+                return Ok(updated);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Lỗi server khi cập nhật sản phẩm");
+            }
         }
 
         [HttpDelete("{id}")]

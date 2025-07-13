@@ -535,7 +535,8 @@
                     </div>
                     <div class="col-12">
                       <label for="productImages" class="form-label">Ảnh sản phẩm</label>
-                      <input type="file" class="form-control" id="productImages" multiple accept="image/*">
+                      <input type="file" class="form-control" id="productImages" multiple accept="image/*" onchange="previewImages(this)">
+                      <div id="imagePreview" class="mt-2 d-flex flex-wrap gap-2"></div>
                     </div>
                   </div>
                 </form>
@@ -566,6 +567,18 @@
                   <div class="mb-3">
                     <label for="editProductCategory" class="form-label">Danh mục *</label>
                     <select class="form-select" id="editProductCategory" required></select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="editProductGoldType" class="form-label">Loại vàng *</label>
+                    <select class="form-select" id="editProductGoldType" required></select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="editProductPrice" class="form-label">Giá *</label>
+                    <input type="number" class="form-control" id="editProductPrice" required>
+                  </div>
+                  <div class="mb-3">
+                    <label for="editProductQuantity" class="form-label">Số lượng *</label>
+                    <input type="number" class="form-control" id="editProductQuantity" required>
                   </div>
                   <div class="mb-3">
                     <label for="editProductDescription" class="form-label">Mô tả</label>
@@ -1338,7 +1351,7 @@
       filterProducts();
     }
 
-    function createProduct() {
+    async function createProduct() {
       const form = document.getElementById('createProductForm');
       const token = localStorage.getItem('accessToken');
       if (!token) {
@@ -1350,6 +1363,7 @@
         });
         return;
       }
+      
       const dto = {
         name: document.getElementById('productName').value,
         description: document.getElementById('productDescription').value,
@@ -1358,43 +1372,113 @@
         price: parseFloat(document.getElementById('productPrice').value),
         quantity: parseInt(document.getElementById('productQuantity').value)
       };
-      $.ajax({
-        url: 'https://localhost:5000/api/Product',
+      
+      try {
+        // Tạo sản phẩm trước
+        const productResponse = await $.ajax({
+          url: 'https://localhost:5000/api/Product',
+          type: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          },
+          data: JSON.stringify(dto)
+        });
+        
+        const productId = productResponse;
+        
+        // Upload ảnh nếu có
+        const files = document.getElementById('productImages').files;
+        if (files.length > 0) {
+          await uploadMultipleProductImages(productId, files, token);
+        }
+        
+        const modal = bootstrap.Modal.getInstance(document.getElementById('createProductModal'));
+        modal.hide();
+        Swal.fire({
+          icon: 'success',
+          title: 'Thành công!',
+          text: 'Sản phẩm đã được tạo thành công.',
+          confirmButtonText: 'Đồng ý'
+        });
+        form.reset();
+        loadProducts();
+      } catch (xhr) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi!',
+          text: 'Tạo sản phẩm thất bại! ' + (xhr.responseText || ''),
+          confirmButtonText: 'Đóng'
+        });
+      }
+    }
+    async function uploadMultipleProductImages(productId, files, token) {
+      // Tạo danh sách ảnh để gửi
+      const images = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        // Convert file to base64 hoặc upload lên server trước
+        const imageUrl = await convertFileToBase64(file);
+        images.push({
+          imageUrl: imageUrl,
+          isMain: i === 0 // Ảnh đầu tiên là ảnh chính
+        });
+      }
+      
+      // Gọi API để tạo nhiều ảnh cùng lúc
+      const dto = {
+        productId: productId,
+        images: images
+      };
+      
+      return await $.ajax({
+        url: 'https://localhost:5000/api/ProductImage/multiple',
         type: 'POST',
         headers: {
           'Authorization': 'Bearer ' + token,
           'Content-Type': 'application/json'
         },
-        data: JSON.stringify(dto),
-        success: function(productId) {
-          // Upload ảnh nếu có
-          const files = document.getElementById('productImages').files;
-          if (files.length > 0) {
-            for (let i = 0; i < files.length; i++) {
-              uploadProductImage(productId, files[i], i === 0, token); // Ảnh đầu tiên là isMain
-            }
-          }
-          const modal = bootstrap.Modal.getInstance(document.getElementById('createProductModal'));
-          modal.hide();
-          Swal.fire({
-            icon: 'success',
-            title: 'Thành công!',
-            text: 'Sản phẩm đã được tạo thành công.',
-            confirmButtonText: 'Đồng ý'
-          });
-          form.reset();
-          loadProducts();
-        },
-        error: function(xhr) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Lỗi!',
-            text: 'Tạo sản phẩm thất bại! ' + (xhr.responseText || ''),
-            confirmButtonText: 'Đóng'
-          });
-        }
+        data: JSON.stringify(dto)
       });
     }
+    
+    function convertFileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    }
+    
+    // Function để preview ảnh
+    function previewImages(input) {
+      const preview = document.getElementById('imagePreview');
+      preview.innerHTML = '';
+      
+      if (input.files && input.files.length > 0) {
+        for (let i = 0; i < input.files.length; i++) {
+          const file = input.files[i];
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            const div = document.createElement('div');
+            div.className = 'position-relative';
+            div.innerHTML = `
+              <img src="${e.target.result}" class="img-thumbnail" style="width: 100px; height: 100px; object-fit: cover;" alt="Preview">
+              <div class="position-absolute top-0 start-0 bg-primary text-white px-1 py-0 rounded" style="font-size: 0.7rem;">
+                ${i === 0 ? 'Chính' : i + 1}
+              </div>
+            `;
+            preview.appendChild(div);
+          };
+          
+          reader.readAsDataURL(file);
+        }
+      }
+    }
+    
+    // Giữ lại function cũ để tương thích ngược
     function uploadProductImage(productId, file, isMain, token) {
       const formData = new FormData();
       formData.append('productId', productId);
@@ -1421,7 +1505,7 @@
         });
         return;
       }
-      // Load product and categories, then fill modal
+      // Load product, categories, gold types, rồi fill modal
       Promise.all([
         $.ajax({
           url: `https://localhost:5000/api/Product/${productId}`,
@@ -1432,29 +1516,46 @@
           url: 'https://localhost:5000/api/Category',
           type: 'GET',
           headers: { 'Authorization': 'Bearer ' + token }
+        }),
+        $.ajax({
+          url: 'https://localhost:5000/api/GoldType',
+          type: 'GET',
+          headers: { 'Authorization': 'Bearer ' + token }
         })
-      ]).then(([product, categories]) => {
+      ]).then(([product, categories, goldTypes]) => {
         document.getElementById('editProductId').value = product.id;
         document.getElementById('editProductName').value = product.name;
         document.getElementById('editProductDescription').value = product.description || '';
         document.getElementById('editProductStatus').value = product.isActive ? 'Active' : 'Inactive';
         // Fill category select
-        const select = document.getElementById('editProductCategory');
-        select.innerHTML = '';
+        const selectCat = document.getElementById('editProductCategory');
+        selectCat.innerHTML = '';
         categories.forEach(cat => {
           const option = document.createElement('option');
           option.value = cat.id;
           option.textContent = cat.name;
           if (product.categoryId === cat.id) option.selected = true;
-          select.appendChild(option);
+          selectCat.appendChild(option);
         });
+        // Fill gold type select
+        const selectGold = document.getElementById('editProductGoldType');
+        selectGold.innerHTML = '';
+        goldTypes.forEach(gt => {
+          const option = document.createElement('option');
+          option.value = gt.id;
+          option.textContent = gt.name;
+          if (product.goldTypeId === gt.id) option.selected = true;
+          selectGold.appendChild(option);
+        });
+        document.getElementById('editProductPrice').value = product.price;
+        document.getElementById('editProductQuantity').value = product.quantity;
         const editModal = new bootstrap.Modal(document.getElementById('editProductModal'));
         editModal.show();
       }).catch(xhr => {
         Swal.fire({
           icon: 'error',
           title: 'Lỗi!',
-          text: 'Không thể lấy thông tin sản phẩm hoặc danh mục!',
+          text: 'Không thể lấy thông tin sản phẩm, danh mục hoặc loại vàng!',
           confirmButtonText: 'Đóng'
         });
       });
@@ -1476,8 +1577,11 @@
       const dto = {
         id: parseInt(productId),
         name: document.getElementById('editProductName').value,
-        categoryId: parseInt(document.getElementById('editProductCategory').value),
         description: document.getElementById('editProductDescription').value,
+        categoryId: parseInt(document.getElementById('editProductCategory').value),
+        goldTypeId: parseInt(document.getElementById('editProductGoldType').value),
+        price: parseFloat(document.getElementById('editProductPrice').value),
+        quantity: parseInt(document.getElementById('editProductQuantity').value),
         isActive: document.getElementById('editProductStatus').value === 'Active'
       };
       $.ajax({
@@ -1620,6 +1724,7 @@
     // Clear form when product modal is closed
     document.getElementById('createProductModal').addEventListener('hidden.bs.modal', function () {
       document.getElementById('createProductForm').reset();
+      document.getElementById('imagePreview').innerHTML = '';
     });
     // Load categories when open create product modal
     document.getElementById('createProductModal').addEventListener('show.bs.modal', function () {
@@ -1649,27 +1754,52 @@
 
     // ========== GOLD TYPE ==========
     function loadGoldTypes() {
-      $.get('/api/GoldType', function(data) {
-        const tbody = $('#goldtype-table tbody');
-        tbody.empty();
-        data.forEach(gt => {
-          tbody.append(`
-            <tr>
-              <td>${gt.name}</td>
-              <td>${gt.description || ''}</td>
-              <td>${gt.karat}</td>
-              <td>${gt.priceType}</td>
-              <td>${gt.isActive ? 'Hoạt động' : 'Ngừng'}</td>
-              <td>${gt.createdDate ? gt.createdDate.split('T')[0] : ''}</td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="showEditGoldTypeModal(${gt.id})">Sửa</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteGoldType(${gt.id})">Xóa</button>
-              </td>
-            </tr>
-          `);
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Cảnh báo!',
+          text: 'Bạn chưa đăng nhập!',
+          confirmButtonText: 'Đồng ý'
         });
-        // Load cho filter GoldPrice
-        loadGoldTypeOptions(data);
+        return;
+      }
+      
+      $.ajax({
+        url: 'https://localhost:5000/api/GoldType',
+        type: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token },
+        success: function(data) {
+          const tbody = $('#goldtype-table tbody');
+          tbody.empty();
+          data.forEach(gt => {
+            tbody.append(`
+              <tr>
+                <td>${gt.name}</td>
+                <td>${gt.description || ''}</td>
+                <td>${gt.karat}</td>
+                <td>${gt.priceType}</td>
+                <td>${gt.isActive ? 'Hoạt động' : 'Ngừng'}</td>
+                <td>${gt.createdDate ? gt.createdDate.split('T')[0] : ''}</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1" onclick="showEditGoldTypeModal(${gt.id})"><i class="fas fa-edit"></i></button>
+                  <button class="btn btn-sm btn-outline-danger" onclick="deleteGoldType(${gt.id})"><i class="fas fa-trash"></i></button>
+                </td>
+              </tr>
+            `);
+          });
+          // Load cho filter GoldPrice
+          loadGoldTypeOptions(data);
+        },
+        error: function(xhr) {
+          console.error('Error loading gold types:', xhr);
+          Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
+            text: 'Không thể tải danh sách loại vàng! ' + (xhr.responseText || ''),
+            confirmButtonText: 'Đóng'
+          });
+        }
       });
     }
     function showCreateGoldTypeModal() {
@@ -1680,63 +1810,160 @@
       $('#goldTypeModal').modal('show');
     }
     function showEditGoldTypeModal(id) {
-      $.get(`/api/GoldType/${id}`, function(gt) {
-        $('#goldTypeModalTitle').text('Sửa loại vàng');
-        $('#goldTypeId').val(gt.id);
-        $('#goldTypeName').val(gt.name);
-        $('#goldTypeDescription').val(gt.description);
-        $('#goldTypeKarat').val(gt.karat);
-        $('#goldTypePriceType').val(gt.priceType);
-        $('#goldTypeIsActive').val(gt.isActive ? 'true' : 'false');
-        $('#goldTypeActiveGroup').show();
-        $('#goldTypeModal').modal('show');
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Cảnh báo!',
+          text: 'Bạn chưa đăng nhập!',
+          confirmButtonText: 'Đồng ý'
+        });
+        return;
+      }
+      
+      $.ajax({
+        url: `https://localhost:5000/api/GoldType/${id}`,
+        type: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token },
+        success: function(gt) {
+          $('#goldTypeModalTitle').text('Sửa loại vàng');
+          $('#goldTypeId').val(gt.id);
+          $('#goldTypeName').val(gt.name);
+          $('#goldTypeDescription').val(gt.description);
+          $('#goldTypeKarat').val(gt.karat);
+          $('#goldTypePriceType').val(gt.priceType);
+          $('#goldTypeIsActive').val(gt.isActive ? 'true' : 'false');
+          $('#goldTypeActiveGroup').show();
+          $('#goldTypeModal').modal('show');
+        },
+        error: function(xhr) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
+            text: 'Không thể lấy thông tin loại vàng! ' + (xhr.responseText || ''),
+            confirmButtonText: 'Đóng'
+          });
+        }
       });
     }
-    $('#goldTypeForm').submit(function(e) {
+    $('#goldTypeForm').off('submit').on('submit', function(e) {
       e.preventDefault();
       const id = $('#goldTypeId').val();
       const dto = {
         name: $('#goldTypeName').val(),
         description: $('#goldTypeDescription').val(),
-        karat: parseInt($('#goldTypeKarat').val()),
+        karat: $('#goldTypeKarat').val() ? parseInt($('#goldTypeKarat').val()) : null,
         priceType: $('#goldTypePriceType').val()
       };
       if (id) {
         dto.id = parseInt(id);
         dto.isActive = $('#goldTypeIsActive').val() === 'true';
         $.ajax({
-          url: `/api/GoldType/${id}`,
+          url: `https://localhost:5000/api/GoldType/${id}`,
           type: 'PUT',
-          contentType: 'application/json',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+            'Content-Type': 'application/json'
+          },
           data: JSON.stringify(dto),
           success: function() {
-            $('#goldTypeModal').modal('hide');
-            loadGoldTypes();
+            Swal.fire({
+              icon: 'success',
+              title: 'Thành công!',
+              text: 'Cập nhật loại vàng thành công.',
+              confirmButtonText: 'Đồng ý'
+            }).then(() => {
+              $('#goldTypeModal').modal('hide');
+              loadGoldTypes();
+            });
+          },
+          error: function(xhr) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Lỗi!',
+              text: 'Cập nhật loại vàng thất bại! ' + (xhr.responseText || ''),
+              confirmButtonText: 'Đóng'
+            });
           }
         });
       } else {
         $.ajax({
-          url: '/api/GoldType',
+          url: 'https://localhost:5000/api/GoldType',
           type: 'POST',
-          contentType: 'application/json',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+            'Content-Type': 'application/json'
+          },
           data: JSON.stringify(dto),
           success: function() {
-            $('#goldTypeModal').modal('hide');
-            loadGoldTypes();
+            Swal.fire({
+              icon: 'success',
+              title: 'Thành công!',
+              text: 'Thêm loại vàng thành công.',
+              confirmButtonText: 'Đồng ý'
+            }).then(() => {
+              $('#goldTypeModal').modal('hide');
+              loadGoldTypes();
+            });
+          },
+          error: function(xhr) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Lỗi!',
+              text: 'Tạo loại vàng thất bại! ' + (xhr.responseText || ''),
+              confirmButtonText: 'Đóng'
+            });
           }
         });
       }
     });
     function deleteGoldType(id) {
-      if (confirm('Bạn có chắc chắn muốn xóa loại vàng này?')) {
-        $.ajax({
-          url: `/api/GoldType/${id}`,
-          type: 'DELETE',
-          success: function() {
-            loadGoldTypes();
+      Swal.fire({
+        title: 'Xác nhận xóa?',
+        text: 'Bạn có chắc chắn muốn xóa loại vàng này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const token = localStorage.getItem('accessToken');
+          if (!token) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Cảnh báo!',
+              text: 'Bạn chưa đăng nhập!',
+              confirmButtonText: 'Đồng ý'
+            });
+            return;
           }
-        });
-      }
+          
+          $.ajax({
+            url: `https://localhost:5000/api/GoldType/${id}`,
+            type: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token },
+            success: function() {
+              Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: 'Loại vàng đã được xóa thành công.',
+                confirmButtonText: 'Đồng ý'
+              });
+              loadGoldTypes();
+            },
+            error: function(xhr) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Xóa loại vàng thất bại! ' + (xhr.responseText || ''),
+                confirmButtonText: 'Đóng'
+              });
+            }
+          });
+        }
+      });
     }
     // ========== GOLD PRICE ==========
     function loadGoldTypeOptions(goldTypes) {
@@ -1744,41 +1971,67 @@
       const selectModal = $('#goldPriceType');
       select.empty();
       selectModal.empty();
+      select.append('<option value="">Tất cả loại vàng</option>'); // Thêm option tất cả
       goldTypes.forEach(gt => {
         select.append(`<option value="${gt.id}">${gt.name}</option>`);
         selectModal.append(`<option value="${gt.id}">${gt.name}</option>`);
       });
-      if (goldTypes.length > 0) {
-        loadGoldPrices(goldTypes[0].id, goldTypes);
-      }
+      loadGoldPrices('', goldTypes); // Mặc định show tất cả
     }
     $('#goldPriceTypeFilter').change(function() {
       const goldTypeId = $(this).val();
       loadGoldPrices(goldTypeId);
     });
     function loadGoldPrices(goldTypeId, goldTypesCache) {
-      $.get('/api/GoldPrice', function(data) {
-        const tbody = $('#goldprice-table tbody');
-        tbody.empty();
-        const goldTypes = goldTypesCache || $('#goldPriceTypeFilter option').map(function(){return {id:$(this).val(),name:$(this).text()};}).get();
-        const goldTypeMap = {};
-        goldTypes.forEach(gt => goldTypeMap[gt.id] = gt.name);
-        data.filter(p => p.goldTypeId == goldTypeId).forEach(p => {
-          tbody.append(`
-            <tr>
-              <td>${goldTypeMap[p.goldTypeId] || ''}</td>
-              <td>${p.buyPrice}</td>
-              <td>${p.sellPrice}</td>
-              <td>${p.recordedAt ? p.recordedAt.replace('T', ' ').substring(0, 16) : ''}</td>
-              <td>${p.isActive ? 'Hoạt động' : 'Ngừng'}</td>
-              <td>${p.createdDate ? p.createdDate.split('T')[0] : ''}</td>
-              <td>
-                <button class="btn btn-sm btn-outline-primary" onclick="showEditGoldPriceModal(${p.id})">Sửa</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteGoldPrice(${p.id})">Xóa</button>
-              </td>
-            </tr>
-          `);
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Cảnh báo!',
+          text: 'Bạn chưa đăng nhập!',
+          confirmButtonText: 'Đồng ý'
         });
+        return;
+      }
+      
+      $.ajax({
+        url: 'https://localhost:5000/api/GoldPrice',
+        type: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token },
+        success: function(data) {
+          const tbody = $('#goldprice-table tbody');
+          tbody.empty();
+          const goldTypes = goldTypesCache || $('#goldPriceTypeFilter option').map(function(){return {id:$(this).val(),name:$(this).text()};}).get();
+          const goldTypeMap = {};
+          goldTypes.forEach(gt => goldTypeMap[gt.id] = gt.name);
+          data
+            .filter(p => !goldTypeId || p.goldTypeId == goldTypeId) // Nếu goldTypeId rỗng thì show tất cả
+            .forEach(p => {
+              tbody.append(`
+                <tr>
+                  <td>${goldTypeMap[p.goldTypeId] || ''}</td>
+                  <td>${p.buyPrice}</td>
+                  <td>${p.sellPrice}</td>
+                  <td>${p.recordedAt ? p.recordedAt.replace('T', ' ').substring(0, 16) : ''}</td>
+                  <td>${p.isActive ? 'Hoạt động' : 'Ngừng'}</td>
+                  <td>${p.createdDate ? p.createdDate.split('T')[0] : ''}</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="showEditGoldPriceModal(${p.id})"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteGoldPrice(${p.id})"><i class="fas fa-trash"></i></button>
+                  </td>
+                </tr>
+              `);
+            });
+        },
+        error: function(xhr) {
+          console.error('Error loading gold prices:', xhr);
+          Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
+            text: 'Không thể tải danh sách giá vàng! ' + (xhr.responseText || ''),
+            confirmButtonText: 'Đóng'
+          });
+        }
       });
     }
     function showCreateGoldPriceModal() {
@@ -1789,19 +2042,43 @@
       $('#goldPriceModal').modal('show');
     }
     function showEditGoldPriceModal(id) {
-      $.get(`/api/GoldPrice/${id}`, function(p) {
-        $('#goldPriceModalTitle').text('Sửa giá vàng');
-        $('#goldPriceId').val(p.id);
-        $('#goldPriceType').val(p.goldTypeId);
-        $('#goldPriceBuy').val(p.buyPrice);
-        $('#goldPriceSell').val(p.sellPrice);
-        $('#goldPriceRecordedAt').val(p.recordedAt ? p.recordedAt.substring(0, 16) : '');
-        $('#goldPriceIsActive').val(p.isActive ? 'true' : 'false');
-        $('#goldPriceActiveGroup').show();
-        $('#goldPriceModal').modal('show');
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Cảnh báo!',
+          text: 'Bạn chưa đăng nhập!',
+          confirmButtonText: 'Đồng ý'
+        });
+        return;
+      }
+      
+      $.ajax({
+        url: `https://localhost:5000/api/GoldPrice/${id}`,
+        type: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token },
+        success: function(p) {
+          $('#goldPriceModalTitle').text('Sửa giá vàng');
+          $('#goldPriceId').val(p.id);
+          $('#goldPriceType').val(p.goldTypeId);
+          $('#goldPriceBuy').val(p.buyPrice);
+          $('#goldPriceSell').val(p.sellPrice);
+          $('#goldPriceRecordedAt').val(p.recordedAt ? p.recordedAt.substring(0, 16) : '');
+          $('#goldPriceIsActive').val(p.isActive ? 'true' : 'false');
+          $('#goldPriceActiveGroup').show();
+          $('#goldPriceModal').modal('show');
+        },
+        error: function(xhr) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
+            text: 'Không thể lấy thông tin giá vàng! ' + (xhr.responseText || ''),
+            confirmButtonText: 'Đóng'
+          });
+        }
       });
     }
-    $('#goldPriceForm').submit(function(e) {
+    $('#goldPriceForm').off('submit').on('submit', function(e) {
       e.preventDefault();
       const id = $('#goldPriceId').val();
       const dto = {
@@ -1814,38 +2091,111 @@
         dto.id = parseInt(id);
         dto.isActive = $('#goldPriceIsActive').val() === 'true';
         $.ajax({
-          url: `/api/GoldPrice/${id}`,
+          url: `https://localhost:5000/api/GoldPrice/${id}`,
           type: 'PUT',
-          contentType: 'application/json',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+            'Content-Type': 'application/json'
+          },
           data: JSON.stringify(dto),
           success: function() {
-            $('#goldPriceModal').modal('hide');
-            loadGoldPrices($('#goldPriceTypeFilter').val());
+            Swal.fire({
+              icon: 'success',
+              title: 'Thành công!',
+              text: 'Cập nhật giá vàng thành công.',
+              confirmButtonText: 'Đồng ý'
+            }).then(() => {
+              $('#goldPriceModal').modal('hide');
+              loadGoldPrices($('#goldPriceTypeFilter').val());
+            });
+          },
+          error: function(xhr) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Lỗi!',
+              text: 'Cập nhật giá vàng thất bại! ' + (xhr.responseText || ''),
+              confirmButtonText: 'Đóng'
+            });
           }
         });
       } else {
         $.ajax({
-          url: '/api/GoldPrice',
+          url: 'https://localhost:5000/api/GoldPrice',
           type: 'POST',
-          contentType: 'application/json',
+          headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('accessToken'),
+            'Content-Type': 'application/json'
+          },
           data: JSON.stringify(dto),
           success: function() {
-            $('#goldPriceModal').modal('hide');
-            loadGoldPrices($('#goldPriceTypeFilter').val());
+            Swal.fire({
+              icon: 'success',
+              title: 'Thành công!',
+              text: 'Thêm giá vàng thành công.',
+              confirmButtonText: 'Đồng ý'
+            }).then(() => {
+              $('#goldPriceModal').modal('hide');
+              loadGoldPrices($('#goldPriceTypeFilter').val());
+            });
+          },
+          error: function(xhr) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Lỗi!',
+              text: 'Tạo giá vàng thất bại! ' + (xhr.responseText || ''),
+              confirmButtonText: 'Đóng'
+            });
           }
         });
       }
     });
     function deleteGoldPrice(id) {
-      if (confirm('Bạn có chắc chắn muốn xóa giá vàng này?')) {
-        $.ajax({
-          url: `/api/GoldPrice/${id}`,
-          type: 'DELETE',
-          success: function() {
-            loadGoldPrices($('#goldPriceTypeFilter').val());
+      Swal.fire({
+        title: 'Xác nhận xóa?',
+        text: 'Bạn có chắc chắn muốn xóa giá vàng này?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const token = localStorage.getItem('accessToken');
+          if (!token) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Cảnh báo!',
+              text: 'Bạn chưa đăng nhập!',
+              confirmButtonText: 'Đồng ý'
+            });
+            return;
           }
-        });
-      }
+          
+          $.ajax({
+            url: `https://localhost:5000/api/GoldPrice/${id}`,
+            type: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + token },
+            success: function() {
+              Swal.fire({
+                icon: 'success',
+                title: 'Thành công!',
+                text: 'Giá vàng đã được xóa thành công.',
+                confirmButtonText: 'Đồng ý'
+              });
+              loadGoldPrices($('#goldPriceTypeFilter').val());
+            },
+            error: function(xhr) {
+              Swal.fire({
+                icon: 'error',
+                title: 'Lỗi!',
+                text: 'Xóa giá vàng thất bại! ' + (xhr.responseText || ''),
+                confirmButtonText: 'Đóng'
+              });
+            }
+          });
+        }
+      });
     }
     // Logout function
     function logout() {

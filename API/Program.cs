@@ -40,7 +40,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductImageRepository, ProductImageRepository>();
 
 // Thêm Services
-builder.Services.AddHttpClient<IGoldPriceService, GoldPriceService>();
+builder.Services.AddScoped<IGoldTypeService, GoldTypeService>();
+builder.Services.AddScoped<IGoldPriceService, GoldPriceService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();

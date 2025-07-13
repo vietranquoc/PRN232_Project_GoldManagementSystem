@@ -1,5 +1,7 @@
 using BusinessObjects.DTOs;
 using BusinessObjects.ViewModels;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Services.Services.Interfaces
 {
@@ -7,7 +9,7 @@ namespace Services.Services.Interfaces
     {
         Task<IEnumerable<ProductViewModel>> GetAllProductsAsync();
         Task<ProductViewModel> GetProductByIdAsync(int id);
-        Task<bool> CreateProductAsync(CreateProductDTO dto);
+        Task<int> CreateProductAsync(CreateProductDTO dto);
         Task<ProductViewModel> UpdateProductAsync(UpdateProductDTO dto);
         Task<bool> DeleteProductAsync(int id);
     }
