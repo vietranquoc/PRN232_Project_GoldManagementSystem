@@ -209,6 +209,7 @@
                 </tbody>
               </table>
             </div>
+            <div id="accountPagination"></div>
           </div>
         </div>
 
@@ -380,6 +381,7 @@
                 </tbody>
               </table>
             </div>
+            <div id="categoryPagination"></div>
           </div>
         </div>
 
@@ -495,6 +497,7 @@
                 </tbody>
               </table>
             </div>
+            <div id="productPagination"></div>
           </div>
         </div>
 
@@ -2226,6 +2229,165 @@
           });
         }
       });
+    }
+
+    // ACCOUNT PAGINATION
+    let accounts = [];
+    let currentAccountPage = 1;
+    const accountPageSize = 9;
+    function renderAccounts(accountsData) {
+      accounts = accountsData;
+      renderAccountsTablePage(1);
+    }
+    function renderAccountsTablePage(page) {
+      const tbody = document.getElementById('accountsTableBody');
+      tbody.innerHTML = '';
+      const sorted = [...accounts].sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+      const start = (page - 1) * accountPageSize;
+      const end = start + accountPageSize;
+      const pageData = sorted.slice(start, end);
+      pageData.forEach(acc => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${acc.id}</td>
+          <td>${acc.username}</td>
+          <td>${acc.email}</td>
+          <td>${acc.fullName}</td>
+          <td><span class="badge ${acc.roleName === 'Manager' ? 'bg-primary' : acc.roleName === 'Employee' ? 'bg-info' : 'bg-secondary'}">${acc.roleName}</span></td>
+          <td><span class="badge ${acc.isActive ? 'bg-success' : 'bg-warning text-dark'}">${acc.isActive ? 'Active' : 'Inactive'}</span></td>
+          <td>${acc.createdDate ? acc.createdDate.split('T')[0] : ''}</td>
+          <td></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      renderAccountPagination(sorted.length, page);
+    }
+    function renderAccountPagination(total, page) {
+      const totalPages = Math.ceil(total / accountPageSize);
+      let html = `<nav><ul class="pagination justify-content-center">`;
+      html += `<li class="page-item${page === 1 ? ' disabled' : ''}"><a class="page-link" href="#" onclick="gotoAccountPage(${page - 1})">Previous</a></li>`;
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<li class="page-item${i === page ? ' active' : ''}"><a class="page-link" href="#" onclick="gotoAccountPage(${i})">${i}</a></li>`;
+      }
+      html += `<li class="page-item${page === totalPages ? ' disabled' : ''}"><a class="page-link" href="#" onclick="gotoAccountPage(${page + 1})">Next</a></li>`;
+      html += `</ul></nav>`;
+      document.getElementById('accountPagination').innerHTML = html;
+    }
+    function gotoAccountPage(page) {
+      if (page < 1) return;
+      const totalPages = Math.ceil(accounts.length / accountPageSize);
+      if (page > totalPages) return;
+      currentAccountPage = page;
+      renderAccountsTablePage(page);
+    }
+    // CATEGORY PAGINATION
+    let categories = [];
+    let currentCategoryPage = 1;
+    const categoryPageSize = 9;
+    function renderCategories(categoriesData) {
+      categories = categoriesData;
+      renderCategoriesTablePage(1);
+    }
+    function renderCategoriesTablePage(page) {
+      const tbody = document.getElementById('categoriesTableBody');
+      tbody.innerHTML = '';
+      const sorted = [...categories].sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+      const start = (page - 1) * categoryPageSize;
+      const end = start + categoryPageSize;
+      const pageData = sorted.slice(start, end);
+      pageData.forEach(cat => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${cat.id}</td>
+          <td>${cat.name}</td>
+          <td>${cat.description || ''}</td>
+          <td><span class="badge ${cat.isActive ? 'bg-success' : 'bg-warning text-dark'}">${cat.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động'}</span></td>
+          <td>${cat.createdDate ? cat.createdDate.split('T')[0] : ''}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary me-1" onclick="editCategory(${cat.id})">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(${cat.id})">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      renderCategoryPagination(sorted.length, page);
+    }
+    function renderCategoryPagination(total, page) {
+      const totalPages = Math.ceil(total / categoryPageSize);
+      let html = `<nav><ul class="pagination justify-content-center">`;
+      html += `<li class="page-item${page === 1 ? ' disabled' : ''}"><a class="page-link" href="#" onclick="gotoCategoryPage(${page - 1})">Previous</a></li>`;
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<li class="page-item${i === page ? ' active' : ''}"><a class="page-link" href="#" onclick="gotoCategoryPage(${i})">${i}</a></li>`;
+      }
+      html += `<li class="page-item${page === totalPages ? ' disabled' : ''}"><a class="page-link" href="#" onclick="gotoCategoryPage(${page + 1})">Next</a></li>`;
+      html += `</ul></nav>`;
+      document.getElementById('categoryPagination').innerHTML = html;
+    }
+    function gotoCategoryPage(page) {
+      if (page < 1) return;
+      const totalPages = Math.ceil(categories.length / categoryPageSize);
+      if (page > totalPages) return;
+      currentCategoryPage = page;
+      renderCategoriesTablePage(page);
+    }
+    // PRODUCT PAGINATION
+    let products = [];
+    let currentProductPage = 1;
+    const productPageSize = 9;
+    function renderProducts(productsData) {
+      products = productsData;
+      renderProductsTablePage(1);
+    }
+    function renderProductsTablePage(page) {
+      const tbody = document.getElementById('productsTableBody');
+      tbody.innerHTML = '';
+      const sorted = [...products].sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+      const start = (page - 1) * productPageSize;
+      const end = start + productPageSize;
+      const pageData = sorted.slice(start, end);
+      pageData.forEach(prod => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${prod.id}</td>
+          <td>${prod.name}</td>
+          <td>${prod.categoryName || ''}</td>
+          <td>${prod.description || ''}</td>
+          <td><span class="badge ${prod.isActive ? 'bg-success' : 'bg-warning text-dark'}">${prod.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động'}</span></td>
+          <td>${prod.createdDate ? prod.createdDate.split('T')[0] : ''}</td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary me-1" onclick="editProduct(${prod.id})">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteProduct(${prod.id})">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      renderProductPagination(sorted.length, page);
+    }
+    function renderProductPagination(total, page) {
+      const totalPages = Math.ceil(total / productPageSize);
+      let html = `<nav><ul class="pagination justify-content-center">`;
+      html += `<li class="page-item${page === 1 ? ' disabled' : ''}"><a class="page-link" href="#" onclick="gotoProductPage(${page - 1})">Previous</a></li>`;
+      for (let i = 1; i <= totalPages; i++) {
+        html += `<li class="page-item${i === page ? ' active' : ''}"><a class="page-link" href="#" onclick="gotoProductPage(${i})">${i}</a></li>`;
+      }
+      html += `<li class="page-item${page === totalPages ? ' disabled' : ''}"><a class="page-link" href="#" onclick="gotoProductPage(${page + 1})">Next</a></li>`;
+      html += `</ul></nav>`;
+      document.getElementById('productPagination').innerHTML = html;
+    }
+    function gotoProductPage(page) {
+      if (page < 1) return;
+      const totalPages = Math.ceil(products.length / productPageSize);
+      if (page > totalPages) return;
+      currentProductPage = page;
+      renderProductsTablePage(page);
     }
   </script>
 </body>

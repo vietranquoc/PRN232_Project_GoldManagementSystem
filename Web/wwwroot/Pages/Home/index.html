@@ -10,103 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
-    <!-- Header -->
-    <header class="fixed-top bg-white shadow-sm">
-        <div class="header-container d-flex align-items-center justify-content-between py-2">
-            <!-- Left Section -->
-            <div class="hleft">
-                <!-- Search -->
-                <div class="hsearch ms-3">
-                    <button aria-label="Search">
-                        <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12.375" cy="12.375" r="7.875" stroke="#020203" stroke-width="3"></circle>
-                            <path d="M24.1442 24.8365L20.7692 21.4615" stroke="#010101" stroke-width="3" stroke-linecap="round"></path>
-                        </svg>
-                    </button>
-                    <input autocomplete="off" type="text" id="inputSearchHeader" name="q" placeholder="Tìm kiếm" aria-label="Search products" onkeydown="checkInputSearchEnter(event)">
-                    <div id="searchHeaderArea"></div>
-                </div>
-            </div>
-            <!-- Center Section (Logo) -->
-            <div class="text-center">
-                <a href="/" class="navbar-brand">
-                    <i class="fas fa-gem me-2"></i>GoldTrack
-                </a>
-            </div>
-            <!-- Right Section -->
-            <div class="hright">
-                <!-- Wishlist -->
-                <div class="hwishlist">
-                    <a href="/wishlist" aria-label="Wishlist">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M5.93421 18.5443L15.3153 27.3568C15.6397 27.6616 15.802 27.814 16 27.814C16.198 27.814 16.3602 27.6616 16.6847 27.3568L26.0657 18.5443C28.674 16.0941 28.9907 12.0621 26.7971 9.23474L26.3846 8.7031C23.7603 5.32075 18.4928 5.888 16.6489 9.75151C16.3884 10.2973 15.6116 10.2973 15.3511 9.75151C13.5071 5.888 8.23961 5.32075 5.61537 8.7031L5.2029 9.23474C3.00924 12.0621 3.32598 16.0941 5.93421 18.5443Z" fill="#222222" stroke="#222222" stroke-width="2"></path>
-                        </svg>
-                        <div class="wish_count">0</div>
-                    </a>
-                </div>
-                <!-- Cart -->
-                <div class="hcheckout ms-3">
-                    <a href="/cart" aria-label="Cart">
-                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10.6667 16L10.6667 10.6667C10.6667 7.72115 13.0545 5.33334 16 5.33334V5.33334C18.9455 5.33334 21.3334 7.72115 21.3334 10.6667L21.3334 16" stroke="#222222" stroke-width="2" stroke-linecap="round"></path>
-                            <path d="M5.02768 15.6678C5.17276 13.9269 5.24529 13.0565 5.81938 12.5282C6.39347 12 7.26693 12 9.01386 12H22.9861C24.7331 12 25.6065 12 26.1806 12.5282C26.7547 13.0565 26.8272 13.9269 26.9723 15.6678L27.8195 25.8339C27.904 26.8474 27.9462 27.3542 27.6491 27.6771C27.352 28 26.8435 28 25.8264 28H6.1736C5.15655 28 4.64802 28 4.35092 27.6771C4.05382 27.3542 4.09605 26.8474 4.18051 25.8339L5.02768 15.6678Z" fill="#222222"></path>
-                        </svg>
-                        <div class="cart_count">0</div>
-                    </a>
-                </div>
-                <!-- Login -->
-                <a id="login-btn" href="../../Pages/Account/login.html" class="btn btn-outline-primary ms-3">Đăng nhập</a>
-                <div id="profile-dropdown" class="dropdown d-none ms-3">
-                    <img class="avatar dropdown-toggle" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile" width="32" height="32" style="border-radius:50%; cursor:pointer;" data-bs-toggle="dropdown">
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="../../Pages/Account/profile.html" id="my-account-link">Tài khoản của tôi</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Đăng xuất</a></li>
-                    </ul>
-                </div>    
-            </div>
-        </div>
-        <!-- Navigation Menu -->
-        <nav class="navbar navbar-expand-lg bg-white">
-            <div class="container">
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav mx-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/">Trang chủ</a>
-                        </li>
-
-                        <li class="nav-item dropdown position-static">
-                            <a class="nav-link dropdown-toggle" href="/Pages/Product/product.html" role="button" aria-expanded="false">
-                                Sản phẩm
-                            </a>
-                            <ul class="dropdown-menu" id="product-category-dropdown">
-                                <li><span class="dropdown-item text-muted">Đang tải...</span></li>
-                            </ul>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link" href="/blogs/gia-vang-hom-nay">Giá vàng</a>
-                        </li>
-                        
-                        <li class="nav-item dropdown position-static" id="news-dropdown-hover">
-                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Tin tức
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/tin-khuyen-mai">Tin khuyến mãi</a></li>
-                                <li><a class="dropdown-item" href="/blog-trang-suc">Blog trang sức</a></li>
-                            </ul>
-                        </li>
-                        
-                        <li class="nav-item">
-                            <a class="nav-link" href="/lien-he">Liên hệ</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-
+    <div id="header-include"></div>
     <!-- Hero Section -->
     <section class="hero-section">
         <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -212,35 +116,62 @@
             </div>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="bg-dark text-white py-4">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4">
-                    <h5>Liên hệ</h5>
-                    <p>Địa chỉ: 123 Đường Vàng, Q.1, TP.HCM</p>
-                    <p>Điện thoại: 0909 123 456</p>
-                    <p>Email: info@kimbau.vn</p>
-                </div>
-                <div class="col-md-4">
-                    <h5>Mạng xã hội</h5>
-                    <a href="#" class="text-warning me-2"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-warning me-2"><i class="fab fa-zalo"></i></a>
-                    <a href="#" class="text-warning"><i class="fab fa-instagram"></i></a>
-                </div>
-                <div class="col-md-4">
-                    <h5>Đường dẫn nhanh</h5>
-                    <a href="#" class="text-warning d-block mb-1">Chính sách bảo hành</a>
-                    <a href="#" class="text-warning d-block mb-1">Vận chuyển</a>
-                    <a href="#" class="text-warning d-block">Bảo mật</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
+    <div id="footer-include"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        function updateHeaderLoginState() {
+            const token = localStorage.getItem('accessToken');
+            const loginBtn = $('#login-btn');
+            const profileDropdown = $('#profile-dropdown');
+            if (token) {
+                if (loginBtn.length) loginBtn.hide();
+                if (profileDropdown.length) profileDropdown.removeClass('d-none');
+            } else {
+                if (loginBtn.length) loginBtn.show();
+                if (profileDropdown.length) profileDropdown.addClass('d-none');
+            }
+            const myAccountLink = $('#my-account-link');
+            if (myAccountLink.length) {
+                myAccountLink.off('click').on('click', function(e) {
+                    e.preventDefault();
+                    if (token) {
+                        window.location.href = '../../Pages/Account/profile.html';
+                    } else {
+                        window.location.href = '../../Pages/Account/login.html';
+                    }
+                });
+            }
+        }
+        function loadProductCategoriesDropdown() {
+            const ul = $('#product-category-dropdown');
+            ul.html('<li><span class="dropdown-item text-muted">Đang tải...</span></li>');
+            $.ajax({
+                url: 'https://localhost:5000/api/Category',
+                method: 'GET',
+                success: function(data) {
+                    if (!data || data.length === 0) {
+                        ul.html('<li><span class="dropdown-item text-muted">Không có danh mục</span></li>');
+                        return;
+                    }
+                    let html = '';
+                    data.forEach(function(cat) {
+                        html += `<li><a class="dropdown-item" href="/collections/category/${cat.id}">${cat.name}</a></li>`;
+                    });
+                    ul.html(html);
+                },
+                error: function(xhr) {
+                    ul.html(`<li><span class="dropdown-item text-danger">Lỗi: ${xhr.responseText || 'Không thể lấy danh mục'}</span></li>`);
+                }
+            });
+        }
+        $(function() {
+            $("#header-include").load("/Pages/Shared/header.html", function() {
+                updateHeaderLoginState();
+                loadProductCategoriesDropdown();
+            });
+            $("#footer-include").load("/Pages/Shared/footer.html");
+        });
         // Search functionality
         function checkInputSearchEnter(event) {
             if (event.key === 'Enter') {
@@ -250,97 +181,107 @@
         }
 
         let goldTypeMap = {};
-        async function loadGoldTypes() {
-            try {
-                const response = await fetch('https://localhost:5000/api/GoldType');
-                if (!response.ok) throw new Error('Lỗi khi lấy loại vàng');
-                const data = await response.json();
-                goldTypeMap = {};
-                data.forEach(gt => {
-                    goldTypeMap[gt.id] = gt.name;
-                });
-            } catch (err) {
-                goldTypeMap = {};
-            }
-        }
-
-        async function fetchGoldPrices() {
-            const tbody = document.getElementById('gold-price-tbody');
-            tbody.innerHTML = '<tr><td colspan="3"><span class="spinner-border spinner-border-sm text-warning"></span> Đang tải...</td></tr>';
-            try {
-                const response = await fetch('https://localhost:5000/api/GoldPrice');
-                if (!response.ok) throw new Error('Lỗi khi lấy dữ liệu');
-                const data = await response.json();
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3">Không có dữ liệu</td></tr>';
-                    return;
+        function loadGoldTypes() {
+            $.ajax({
+                url: 'https://localhost:5000/api/GoldType',
+                method: 'GET',
+                success: function(data) {
+                    goldTypeMap = {};
+                    data.forEach(function(gt) {
+                        goldTypeMap[gt.id] = gt.name;
+                    });
+                },
+                error: function() {
+                    goldTypeMap = {};
                 }
-                tbody.innerHTML = data.map(row => `
-                    <tr>
-                        <td><b>${goldTypeMap[row.goldTypeId] || 'Không xác định'}</b></td>
-                        <td class="text-success fw-bold">${Number(row.buyPrice).toLocaleString('vi-VN')} <span class="text-muted">VNĐ</span></td>
-                        <td class="text-danger fw-bold">${Number(row.sellPrice).toLocaleString('vi-VN')} <span class="text-muted">VNĐ</span></td>
-                    </tr>
-                `).join('');
-            } catch (err) {
-                tbody.innerHTML = `<tr><td colspan="3" class="text-danger">Lỗi: ${err.message}</td></tr>`;
-            }
+            });
         }
 
-        document.addEventListener('DOMContentLoaded', async function() {
-            await loadGoldTypes();
-            fetchGoldPrices();
+        function fetchGoldPrices() {
+            const tbody = $('#gold-price-tbody');
+            tbody.html('<tr><td colspan="3"><span class="spinner-border spinner-border-sm text-warning"></span> Đang tải...</td></tr>');
+            $.ajax({
+                url: 'https://localhost:5000/api/GoldPrice',
+                method: 'GET',
+                success: function(data) {
+                    if (!data || data.length === 0) {
+                        tbody.html('<tr><td colspan="3">Không có dữ liệu</td></tr>');
+                        return;
+                    }
+                    let html = '';
+                    data.forEach(function(row) {
+                        html += `<tr>
+                            <td><b>${goldTypeMap[row.goldTypeId] || 'Không xác định'}</b></td>
+                            <td class="text-success fw-bold">${Number(row.buyPrice).toLocaleString('vi-VN')} <span class="text-muted">VNĐ</span></td>
+                            <td class="text-danger fw-bold">${Number(row.sellPrice).toLocaleString('vi-VN')} <span class="text-muted">VNĐ</span></td>
+                        </tr>`;
+                    });
+                    tbody.html(html);
+                },
+                error: function(xhr) {
+                    tbody.html(`<tr><td colspan="3" class="text-danger">Lỗi: ${xhr.responseText || 'Không thể lấy dữ liệu'}</td></tr>`);
+                }
+            });
+        }
+
+        $(document).ready(function() {
+            loadGoldTypes();
+            setTimeout(fetchGoldPrices, 300); // Đảm bảo goldTypeMap đã load
             loadProductCategoriesDropdown();
+            fetchFeaturedProducts();
         });
 
         // Sản phẩm nổi bật
-        async function fetchFeaturedProducts() {
-            const row = document.getElementById('featured-products-row');
-            row.innerHTML = '<div class="text-center text-muted w-100" id="featured-products-loading"><span class="spinner-border spinner-border-sm text-warning"></span> Đang tải...</div>';
-            try {
-                const response = await fetch('https://localhost:5000/api/Product');
-                if (!response.ok) throw new Error('Lỗi khi lấy sản phẩm');
-                const data = await response.json();
-                if (!data || data.length === 0) {
-                    row.innerHTML = '<div class="text-center text-muted w-100">Không có sản phẩm nổi bật</div>';
-                    return;
-                }
-                // Lấy 4 sản phẩm đầu tiên (hoặc lọc theo tiêu chí nổi bật nếu có)
-                const featured = data.slice(0, 4);
-                row.innerHTML = featured.map(prod => `
-                    <div class="col-md-3 col-sm-6 mb-4">
-                        <div class="card h-100 shadow-sm">
-                            <img src="${(prod.images && prod.images.length > 0) ? prod.images[0].imageUrl : 'https://via.placeholder.com/200x200'}" class="card-img-top" alt="${prod.name}">
-                            <div class="card-body">
-                                <h5 class="card-title">${prod.name}</h5>
-                                <p class="card-text text-warning fw-bold">${Number(prod.price).toLocaleString('vi-VN')} VNĐ</p>
-                                <a href="#" class="btn btn-outline-warning">Xem chi tiết</a>
+        function fetchFeaturedProducts() {
+            const row = $('#featured-products-row');
+            row.html('<div class="text-center text-muted w-100" id="featured-products-loading"><span class="spinner-border spinner-border-sm text-warning"></span> Đang tải...</div>');
+            $.ajax({
+                url: 'https://localhost:5000/api/Product',
+                method: 'GET',
+                success: function(data) {
+                    if (!data || data.length === 0) {
+                        row.html('<div class="text-center text-muted w-100">Không có sản phẩm nổi bật</div>');
+                        return;
+                    }
+                    const featured = data.slice(0, 4);
+                    let html = '';
+                    featured.forEach(function(prod) {
+                        html += `
+                            <div class="col-md-3 col-sm-6 mb-4">
+                                <div class="card h-100 shadow-sm">
+                                    <img src="${(prod.images && prod.images.length > 0) ? prod.images[0].imageUrl : 'https://via.placeholder.com/200x200'}" class="card-img-top" alt="${prod.name}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${prod.name}</h5>
+                                        <p class="card-text text-warning fw-bold">${Number(prod.price).toLocaleString('vi-VN')} VNĐ</p>
+                                        <a href="#" class="btn btn-outline-warning">Xem chi tiết</a>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                `).join('');
-            } catch (err) {
-                row.innerHTML = `<div class="text-center text-danger w-100">Lỗi: ${err.message}</div>`;
-            }
+                        `;
+                    });
+                    row.html(html);
+                },
+                error: function(xhr) {
+                    row.html(`<div class="text-center text-danger w-100">Lỗi: ${xhr.responseText || 'Không thể lấy sản phẩm'}</div>`);
+                }
+            });
         }
-        fetchFeaturedProducts();
     </script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        $(document).ready(function() {
             const token = localStorage.getItem('accessToken');
-            const loginBtn = document.getElementById('login-btn');
-            const profileDropdown = document.getElementById('profile-dropdown');
+            const loginBtn = $('#login-btn');
+            const profileDropdown = $('#profile-dropdown');
             if (token) {
-                if (loginBtn) loginBtn.style.display = 'none';
-                if (profileDropdown) profileDropdown.classList.remove('d-none');
+                if (loginBtn.length) loginBtn.hide();
+                if (profileDropdown.length) profileDropdown.removeClass('d-none');
             } else {
-                if (loginBtn) loginBtn.style.display = '';
-                if (profileDropdown) profileDropdown.classList.add('d-none');
+                if (loginBtn.length) loginBtn.show();
+                if (profileDropdown.length) profileDropdown.addClass('d-none');
             }
-            
-            const myAccountLink = document.getElementById('my-account-link');
-            if (myAccountLink) {
-                myAccountLink.addEventListener('click', function(e) {
+            const myAccountLink = $('#my-account-link');
+            if (myAccountLink.length) {
+                myAccountLink.on('click', function(e) {
                     e.preventDefault();
                     const token = localStorage.getItem('accessToken');
                     if (token) {
@@ -351,8 +292,7 @@
                 });
             }
         });
-
-        // Logout function dùng SweetAlert2
+        
         function logout() {
             Swal.fire({
                 title: 'Xác nhận đăng xuất?',
@@ -381,28 +321,6 @@
                 }
             });
         }
-    </script>
-    <script>
-        // Thay thế dropdown danh mục sản phẩm bằng dữ liệu động
-        async function loadProductCategoriesDropdown() {
-            const ul = document.getElementById('product-category-dropdown');
-            ul.innerHTML = '<li><span class="dropdown-item text-muted">Đang tải...</span></li>';
-            try {
-                const response = await fetch('https://localhost:5000/api/Category');
-                if (!response.ok) throw new Error('Lỗi khi lấy danh mục');
-                const data = await response.json();
-                if (!data || data.length === 0) {
-                    ul.innerHTML = '<li><span class="dropdown-item text-muted">Không có danh mục</span></li>';
-                    return;
-                }
-                ul.innerHTML = data.map(cat =>
-                    `<li><a class="dropdown-item" href="/collections/category/${cat.id}">${cat.name}</a></li>`
-                ).join('');
-            } catch (err) {
-                ul.innerHTML = `<li><span class="dropdown-item text-danger">Lỗi: ${err.message}</span></li>`;
-            }
-        }
-        document.addEventListener('DOMContentLoaded', loadProductCategoriesDropdown);
     </script>
 </body>
 </html>

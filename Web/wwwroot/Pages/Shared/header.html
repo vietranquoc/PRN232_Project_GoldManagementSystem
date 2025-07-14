@@ -1,0 +1,91 @@
+<header class="fixed-top bg-white shadow-sm">
+    <div class="header-container d-flex align-items-center justify-content-between py-2">
+        <!-- Left Section -->
+        <div class="hleft">
+            <!-- Search -->
+            <div class="hsearch ms-3">
+                <button aria-label="Search">
+                    <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12.375" cy="12.375" r="7.875" stroke="#020203" stroke-width="3"></circle>
+                        <path d="M24.1442 24.8365L20.7692 21.4615" stroke="#010101" stroke-width="3" stroke-linecap="round"></path>
+                    </svg>
+                </button>
+                <input autocomplete="off" type="text" id="inputSearchHeader" name="q" placeholder="Tìm kiếm" aria-label="Search products" onkeydown="checkInputSearchEnter(event)">
+                <div id="searchHeaderArea"></div>
+            </div>
+        </div>
+        <!-- Center Section (Logo) -->
+        <div class="text-center">
+            <a href="/" class="navbar-brand">
+                <i class="fas fa-gem me-2"></i>GoldTrack
+            </a>
+        </div>
+        <!-- Right Section -->
+        <div class="hright">
+            <!-- Wishlist -->
+            <div class="hwishlist">
+                <a href="/wishlist" aria-label="Wishlist">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.93421 18.5443L15.3153 27.3568C15.6397 27.6616 15.802 27.814 16 27.814C16.198 27.814 16.3602 27.6616 16.6847 27.3568L26.0657 18.5443C28.674 16.0941 28.9907 12.0621 26.7971 9.23474L26.3846 8.7031C23.7603 5.32075 18.4928 5.888 16.6489 9.75151C16.3884 10.2973 15.6116 10.2973 15.3511 9.75151C13.5071 5.888 8.23961 5.32075 5.61537 8.7031L5.2029 9.23474C3.00924 12.0621 3.32598 16.0941 5.93421 18.5443Z" fill="#222222" stroke="#222222" stroke-width="2"></path>
+                    </svg>
+                    <div class="wish_count">0</div>
+                </a>
+            </div>
+            <!-- Cart -->
+            <div class="hcheckout ms-3">
+                <a href="/cart" aria-label="Cart">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.6667 16L10.6667 10.6667C10.6667 7.72115 13.0545 5.33334 16 5.33334V5.33334C18.9455 5.33334 21.3334 7.72115 21.3334 10.6667L21.3334 16" stroke="#222222" stroke-width="2" stroke-linecap="round"></path>
+                        <path d="M5.02768 15.6678C5.17276 13.9269 5.24529 13.0565 5.81938 12.5282C6.39347 12 7.26693 12 9.01386 12H22.9861C24.7331 12 25.6065 12 26.1806 12.5282C26.7547 13.0565 26.8272 13.9269 26.9723 15.6678L27.8195 25.8339C27.904 26.8474 27.9462 27.3542 27.6491 27.6771C27.352 28 26.8435 28 25.8264 28H6.1736C5.15655 28 4.64802 28 4.35092 27.6771C4.05382 27.3542 4.09605 26.8474 4.18051 25.8339L5.02768 15.6678Z" fill="#222222"></path>
+                    </svg>
+                    <div class="cart_count">0</div>
+                </a>
+            </div>
+            <!-- Login -->
+            <a id="login-btn" href="../../Pages/Account/login.html" class="btn btn-outline-primary ms-3">Đăng nhập</a>
+            <div id="profile-dropdown" class="dropdown d-none ms-3">
+                <img class="avatar dropdown-toggle" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile" width="32" height="32" style="border-radius:50%; cursor:pointer;" data-bs-toggle="dropdown">
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="../../Pages/Account/profile.html" id="my-account-link">Tài khoản của tôi</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="#" onclick="logout()">Đăng xuất</a></li>
+                </ul>
+            </div>    
+        </div>
+    </div>
+    <!-- Navigation Menu -->
+    <nav class="navbar navbar-expand-lg bg-white">
+        <div class="container">
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Trang chủ</a>
+                    </li>
+                    <li class="nav-item dropdown position-static">
+                        <a class="nav-link dropdown-toggle" href="/Pages/Product/product.html" role="button" aria-expanded="false">
+                            Sản phẩm
+                        </a>
+                        <ul class="dropdown-menu" id="product-category-dropdown">
+                            <li><span class="dropdown-item text-muted">Đang tải...</span></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/blogs/gia-vang-hom-nay">Giá vàng</a>
+                    </li>
+                    <li class="nav-item dropdown position-static" id="news-dropdown-hover">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Tin tức
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/tin-khuyen-mai">Tin khuyến mãi</a></li>
+                            <li><a class="dropdown-item" href="/blog-trang-suc">Blog trang sức</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/lien-he">Liên hệ</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header> 

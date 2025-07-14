@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết sản phẩm | GoldTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="../../css/style.css" rel="stylesheet">
+    <style>
+        .product-gallery-thumb img { cursor: pointer; border: 2px solid transparent; }
+        .product-gallery-thumb img.active { border-color: #ffc107; }
+        .product-gallery-main { max-width: 100%; max-height: 400px; object-fit: contain; }
+        .product-attr-btn { border: 1px solid #ccc; border-radius: 4px; padding: 2px 10px; margin-right: 5px; background: #f8f9fa; }
+        .product-attr-btn.selected { border-color: #ffc107; background: #fffbe6; }
+        .product-detail-price { color: #e53935; font-size: 2rem; font-weight: bold; }
+        .product-detail-buy-btn { background: #e53935; color: #fff; font-size: 1.2rem; font-weight: bold; }
+        .product-detail-buy-btn:hover { background: #c62828; }
+        .product-detail-utility i { color: #ffc107; margin-right: 6px; }
+    </style>
+</head>
+<body>
+    <div id="header-include"></div>
+    <div class="container mt-5 pt-4">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mt-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="#" id="breadcrumb-category">Sản phẩm</a></li>
+                <li class="breadcrumb-item active" id="breadcrumb-name" aria-current="page">Chi tiết</li>
+            </ol>
+        </nav>
+        <div class="row mt-3">
+            <!-- Gallery -->
+            <div class="col-md-6">
+                <div class="text-center mb-3">
+                    <img id="mainProductImage" src="https://via.placeholder.com/400x400" class="product-gallery-main img-fluid rounded" alt="Ảnh sản phẩm">
+                </div>
+                <div class="d-flex justify-content-center gap-2 product-gallery-thumb" id="productGalleryThumbs">
+                    <!-- Ảnh nhỏ sẽ render ở đây -->
+                </div>
+            </div>
+            <!-- Info -->
+            <div class="col-md-6">
+                <h3 id="productName">Tên sản phẩm</h3>
+                <div class="mb-2 text-muted" id="productCode">Mã sản phẩm: </div>
+                <div class="product-detail-price mb-2" id="productPrice">0 VNĐ</div>
+                <div class="mb-2">
+                    <span class="product-attr-btn" id="productGoldType">Loại vàng</span>
+                    <span class="product-attr-btn" id="productCodeType">Mã</span>
+                </div>
+                <div class="mb-2">
+                    <span class="product-attr-btn" id="productColor">Màu</span>
+                </div>
+                <div class="mb-2">
+                    <label for="productQuantity" class="form-label">Số lượng:</label>
+                    <button class="btn btn-outline-secondary btn-sm" id="qtyMinus">-</button>
+                    <input type="number" id="productQuantity" value="1" min="1" style="width:60px; text-align:center;">
+                    <button class="btn btn-outline-secondary btn-sm" id="qtyPlus">+</button>
+                    <span class="ms-2 badge bg-success" id="productStock">Còn hàng</span>
+                </div>
+                <div class="mb-3 d-flex gap-2">
+                    <button class="btn product-detail-buy-btn flex-grow-1" id="buyNowBtn">MUA NGAY</button>
+                    <button class="btn btn-outline-danger" id="addToCartBtn"><i class="fas fa-shopping-bag"></i> Thêm vào giỏ</button>
+                </div>
+                <button class="btn btn-outline-secondary w-100 mb-3"><i class="fas fa-map-marker-alt"></i> Tìm sản phẩm tại cửa hàng</button>
+                <div class="product-detail-utility mb-2">
+                    <div><i class="fas fa-sync-alt"></i> Đổi miễn phí trong 72 giờ</div>
+                    <div><i class="fas fa-truck"></i> Miễn phí giao hàng toàn quốc</div>
+                    <div><i class="fas fa-credit-card"></i> Trả góp 0%</div>
+                    <div><i class="fas fa-cogs"></i> Bảo hành trọn đời</div>
+                </div>
+                <div class="mt-3 text-muted">Cần giúp đỡ? <b>1900 633 428</b></div>
+            </div>
+        </div>
+    </div>
+    <div id="footer-include"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+    $(function() {
+        $("#header-include").load("/Pages/Shared/header.html", function() {
+            if (typeof updateHeaderLoginState === 'function') updateHeaderLoginState();
+            if (typeof loadProductCategoriesDropdown === 'function') loadProductCategoriesDropdown();
+        });
+        $("#footer-include").load("/Pages/Shared/footer.html");
+    });
+    // Lấy id sản phẩm từ URL
+    function getProductIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
+    }
+    // Render chi tiết sản phẩm
+    async function loadProductDetail() {
+        const id = getProductIdFromUrl();
+        if (!id) return;
+        try {
+            const res = await $.ajax({ url: `https://localhost:5000/api/Product/${id}`, method: 'GET' });
+            // Tên, mã, giá, loại vàng, màu, ảnh, ...
+            $('#productName').text(res.name);
+            $('#productCode').text('Mã sản phẩm: ' + (res.code || res.id));
+            $('#productPrice').text(Number(res.price).toLocaleString('vi-VN') + ' VNĐ');
+            $('#productGoldType').text(res.goldTypeName || '');
+            $('#productCodeType').text(res.code || '');
+            $('#productColor').text(res.color || '');
+            $('#productStock').text(res.quantity > 0 ? 'Còn hàng' : 'Hết hàng').toggleClass('bg-success', res.quantity > 0).toggleClass('bg-danger', res.quantity <= 0);
+            $('#productQuantity').val(1).attr('max', res.quantity);
+            // Breadcrumb
+            $('#breadcrumb-name').text(res.name);
+            // Ảnh
+            let images = res.images && res.images.length > 0 ? res.images : [{ imageUrl: 'https://via.placeholder.com/400x400' }];
+            $('#mainProductImage').attr('src', images[0].imageUrl);
+            let thumbsHtml = '';
+            images.forEach((img, idx) => {
+                thumbsHtml += `<img src="${img.imageUrl}" class="img-thumbnail${idx === 0 ? ' active' : ''}" style="width:70px; height:70px; object-fit:cover;" data-idx="${idx}">`;
+            });
+            $('#productGalleryThumbs').html(thumbsHtml);
+            // Click đổi ảnh
+            $('#productGalleryThumbs img').on('click', function() {
+                $('#productGalleryThumbs img').removeClass('active');
+                $(this).addClass('active');
+                const idx = $(this).data('idx');
+                $('#mainProductImage').attr('src', images[idx].imageUrl);
+            });
+        } catch (e) {
+            $('.container').html('<div class="alert alert-danger">Không tìm thấy sản phẩm!</div>');
+        }
+    }
+    $(document).ready(function() {
+        loadProductDetail();
+        // Số lượng +/-
+        $('#qtyMinus').on('click', function() {
+            let val = parseInt($('#productQuantity').val()) || 1;
+            if (val > 1) $('#productQuantity').val(val - 1);
+        });
+        $('#qtyPlus').on('click', function() {
+            let val = parseInt($('#productQuantity').val()) || 1;
+            let max = parseInt($('#productQuantity').attr('max')) || 99;
+            if (val < max) $('#productQuantity').val(val + 1);
+        });
+    });
+    </script>
+</body>
+</html> 
