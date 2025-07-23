@@ -1,0 +1,94 @@
+/* Card bo góc và bóng nhẹ */
+.card.checkout-card {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 1px solid #f3eaea;
+    background: #fff;
+}
+
+/* Tiêu đề, breadcrumb */
+.checkout-title {
+    color: #FFD700;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+.checkout-breadcrumb {
+    color: #bdbdbd;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Input, select, textarea */
+.checkout-input, .checkout-select, .checkout-textarea {
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    font-size: 1rem;
+}
+.checkout-input:focus, .checkout-select:focus, .checkout-textarea:focus {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 0.1rem #e74c3c33;
+}
+
+/* Radio, checkbox */
+.checkout-radio, .checkout-checkbox {
+    accent-color: #e74c3c;
+}
+
+/* Label */
+.checkout-label {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+/* Sản phẩm tóm tắt */
+.checkout-summary-product {
+    border-bottom: 1px solid #f3eaea;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.checkout-summary-product:last-child {
+    border-bottom: none;
+}
+
+.checkout-summary-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+.checkout-summary-total {
+    font-weight: 600;
+    color: #e74c3c;
+    font-size: 1.3rem;
+}
+
+/* Nút và link */
+.checkout-btn-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+.checkout-btn-row .btn {
+    min-width: 180px;
+}
+.checkout-link {
+    color: #222;
+    text-decoration: underline;
+    font-size: 1rem;
+}
+
+/* Spacing cho card-body */
+.card.checkout-card .card-body {
+    padding: 2rem 2rem 1.5rem 2rem;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .card.checkout-card .card-body {
+        padding: 1.2rem 0.7rem 1.2rem 0.7rem;
+    }
+    .checkout-title {
+        font-size: 1.3rem;
+    }
+} 

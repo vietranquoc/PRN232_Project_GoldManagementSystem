@@ -25,8 +25,6 @@ namespace Services.Services.Implementations
                 Id = t.Id,
                 UserId = t.UserId,
                 GoldTypeId = t.GoldTypeId,
-                TransactionType = t.TransactionType,
-                Weight = t.Weight,
                 UnitPrice = t.UnitPrice,
                 TotalAmount = t.TotalAmount,
                 TransactionDate = t.TransactionDate,
@@ -46,8 +44,6 @@ namespace Services.Services.Implementations
                 Id = t.Id,
                 UserId = t.UserId,
                 GoldTypeId = t.GoldTypeId,
-                TransactionType = t.TransactionType,
-                Weight = t.Weight,
                 UnitPrice = t.UnitPrice,
                 TotalAmount = t.TotalAmount,
                 TransactionDate = t.TransactionDate,
@@ -64,8 +60,6 @@ namespace Services.Services.Implementations
             {
                 UserId = dto.UserId,
                 GoldTypeId = dto.GoldTypeId,
-                TransactionType = dto.TransactionType,
-                Weight = dto.Weight,
                 UnitPrice = dto.UnitPrice,
                 TotalAmount = dto.Weight * dto.UnitPrice,
                 TransactionDate = dto.TransactionDate,
@@ -82,8 +76,6 @@ namespace Services.Services.Implementations
             if (entity == null) return null;
             entity.UserId = dto.UserId;
             entity.GoldTypeId = dto.GoldTypeId;
-            entity.TransactionType = dto.TransactionType;
-            entity.Weight = dto.Weight;
             entity.UnitPrice = dto.UnitPrice;
             entity.TotalAmount = dto.TotalAmount;
             entity.TransactionDate = dto.TransactionDate;
@@ -96,8 +88,6 @@ namespace Services.Services.Implementations
                 Id = entity.Id,
                 UserId = entity.UserId,
                 GoldTypeId = entity.GoldTypeId,
-                TransactionType = entity.TransactionType,
-                Weight = entity.Weight,
                 UnitPrice = entity.UnitPrice,
                 TotalAmount = entity.TotalAmount,
                 TransactionDate = entity.TransactionDate,
@@ -125,8 +115,6 @@ namespace Services.Services.Implementations
                 Id = t.Id,
                 UserId = t.UserId,
                 GoldTypeId = t.GoldTypeId,
-                TransactionType = t.TransactionType,
-                Weight = t.Weight,
                 UnitPrice = t.UnitPrice,
                 TotalAmount = t.TotalAmount,
                 TransactionDate = t.TransactionDate,

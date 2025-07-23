@@ -1,0 +1,130 @@
+using BusinessObjects.EntityModel;
+using Repositories.Infrastructure.Interfaces;
+using Services.Services.Interfaces;
+
+namespace Services.Services.Implementations
+{
+    public class CartService : ICartService
+    {
+        private readonly ICartRepository _cartRepository;
+        private readonly ICartItemRepository _cartItemRepository;
+        private readonly IProductRepository _productRepository;
+        private readonly ITransactionRepository _transactionRepository;
+
+        public CartService(ICartRepository cartRepository, ICartItemRepository cartItemRepository, IProductRepository productRepository, ITransactionRepository transactionRepository)
+        {
+            _cartRepository = cartRepository;
+            _cartItemRepository = cartItemRepository;
+            _productRepository = productRepository;
+            _transactionRepository = transactionRepository;
+        }
+
+        public async Task<Cart> GetOrCreateActiveCartAsync()
+        {
+            var cart = await _cartRepository.GetActiveCartByUserIdAsync();
+            if (cart == null)
+            {
+                cart = new Cart 
+                { 
+                    UserId = _cartRepository.GetCurrentUserId(),
+                    CreatedDate = DateTime.UtcNow 
+                };
+                _cartRepository.Insert(cart);
+                await _cartRepository.SaveChangesAsync();
+            }
+            return cart;
+        }
+
+        public async Task<IEnumerable<CartItem>> GetCartItemsAsync(int cartId)
+        {
+            return await _cartItemRepository.GetItemsByCartIdAsync(cartId);
+        }
+
+        public async Task AddOrUpdateCartItemAsync(int cartId, int productId, int quantity, decimal price)
+        {
+            var items = await _cartItemRepository.GetItemsByCartIdAsync(cartId);
+            var item = items.FirstOrDefault(i => i.ProductId == productId);
+            if (item != null)
+            {
+                item.Quantity += quantity;
+                _cartItemRepository.Update(item);
+            }
+            else
+            {
+                var newItem = new CartItem 
+                { 
+                    CartId = cartId, 
+                    ProductId = productId, 
+                    Quantity = quantity, 
+                    Price = price 
+                };
+                _cartItemRepository.Insert(newItem);
+            }
+            await _cartItemRepository.SaveChangesAsync();
+        }
+
+        public async Task RemoveCartItemAsync(int cartItemId)
+        {
+            var item = await _cartItemRepository.GetByIdAsync(cartItemId);
+            if (item != null)
+            {
+                _cartItemRepository.Remove(item);
+                await _cartItemRepository.SaveChangesAsync();
+            }
+        }
+
+        public async Task ClearCartAsync(int cartId)
+        {
+            var items = await _cartItemRepository.GetItemsByCartIdAsync(cartId);
+            foreach (var item in items)
+            {
+                _cartItemRepository.Remove(item);
+            }
+            await _cartItemRepository.SaveChangesAsync();
+        }
+
+        public async Task<bool> CheckoutAsync()
+        {
+            var cart = await _cartRepository.GetActiveCartByUserIdAsync();
+            if (cart == null) return false;
+            var items = await _cartItemRepository.GetItemsByCartIdAsync(cart.Id);
+            if (!items.Any()) return false;
+
+            var transaction = new Transaction
+            {
+                UserId = _cartRepository.GetCurrentUserId(),
+                GoldTypeId = 0, // Nếu cần, có thể lấy GoldTypeId đầu tiên hoặc bỏ trường này
+                UnitPrice = 0, // Không dùng nữa, chỉ để tránh lỗi nếu entity còn trường này
+                TotalAmount = 0,
+                TransactionDate = DateTime.UtcNow,
+                Status = "COMPLETED",
+                TransactionDetails = new List<TransactionDetail>()
+            };
+
+            foreach (var item in items)
+            {
+                var product = await _productRepository.GetByIdAsync(item.ProductId);
+                if (product == null || product.Quantity < item.Quantity)
+                    throw new InvalidOperationException($"Sản phẩm {item.ProductId} không đủ hàng");
+                product.Quantity -= item.Quantity;
+                _productRepository.Update(product);
+
+                var detail = new TransactionDetail
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    UnitPrice = item.Price,
+                    TotalAmount = item.Price * item.Quantity
+                };
+                transaction.TotalAmount += detail.TotalAmount;
+                transaction.TransactionDetails.Add(detail);
+            }
+
+            _transactionRepository.Insert(transaction);
+            await _transactionRepository.SaveChangesAsync();
+            await _productRepository.SaveChangesAsync();
+            await ClearCartAsync(cart.Id);
+            return true;
+        }
+    }
+} 

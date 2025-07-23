@@ -837,8 +837,10 @@
       }
       $.ajax({
         url: 'https://localhost:5000/api/Account/all',
-        type: 'GET',
-        headers: { 'Authorization': 'Bearer ' + token },
+        method: 'GET',
+        headers: { 
+          'Authorization': 'Bearer ' + token 
+        },
         success: function(accounts) {
           console.log('API /api/Account/all response:', accounts);
           renderAccounts(accounts);

@@ -18,6 +18,9 @@ namespace BusinessObjects.DBContext
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<TransactionDetail> TransactionDetails { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -61,9 +64,13 @@ namespace BusinessObjects.DBContext
                 .Property(t => t.UnitPrice)
                 .HasPrecision(18, 2);
 
-            modelBuilder.Entity<Transaction>()
-                .Property(t => t.Weight)
-                .HasPrecision(10, 3);
+            // Cấu hình decimal cho TransactionDetail
+            modelBuilder.Entity<TransactionDetail>()
+                .Property(td => td.UnitPrice)
+                .HasPrecision(18, 2);
+            modelBuilder.Entity<TransactionDetail>()
+                .Property(td => td.TotalAmount)
+                .HasPrecision(18, 2);
 
             // Cấu hình mối quan hệ
             modelBuilder.Entity<User>()
@@ -85,12 +92,6 @@ namespace BusinessObjects.DBContext
                 .HasOne(t => t.User)
                 .WithMany(u => u.Transactions)
                 .HasForeignKey(t => t.UserId);
-
-            // Cấu hình enum
-            modelBuilder.Entity<Transaction>()
-                .Property(t => t.TransactionType)
-                .HasConversion<string>()
-                .HasMaxLength(10);
 
             modelBuilder.Entity<Transaction>()
                 .Property(t => t.Status)
@@ -142,6 +143,10 @@ namespace BusinessObjects.DBContext
 
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<CartItem>()
+                .Property(ci => ci.Price)
                 .HasPrecision(18, 2);
 
             modelBuilder.Entity<Product>()
