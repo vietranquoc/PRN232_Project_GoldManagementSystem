@@ -14,7 +14,6 @@ namespace Repositories.Infrastructure.Implementations
         public async Task<IEnumerable<Transaction>> GetByUserIdAsync(int userId)
         {
             return await _context.Transactions
-                .Include(t => t.GoldType)
                 .Include(t => t.User) 
                 .Where(t => t.UserId == userId && t.IsActive)
                 .ToListAsync();

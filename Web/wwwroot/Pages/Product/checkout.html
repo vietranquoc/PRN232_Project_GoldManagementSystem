@@ -156,6 +156,10 @@
                             <div class="mb-3">
                                 <textarea class="form-control checkout-textarea" rows="2" placeholder="Ghi chú đơn hàng" name="note"></textarea>
                             </div>
+                            <div class="checkout-btn-row d-flex justify-content-between align-items-center">
+                                <a href="/Pages/Product/cart.html" class="checkout-link" style="text-decoration: none;">Về giỏ hàng</a>
+                                <button type="submit" class="btn btn-danger" style="font-weight:600;">HOÀN TẤT ĐƠN HÀNG</button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -185,12 +189,6 @@
                         </div>
                         <input type="text" class="form-control checkout-input mt-3" placeholder="Mã giảm giá">
                         <button class="btn btn-light mt-2 mb-3" style="color:#fff;background:#FFD700;">Sử dụng</button>
-                        <textarea class="form-control checkout-textarea mb-2" rows="2" placeholder="Ghi chú đơn hàng"></textarea>
-                        <div class="form-check mb-2">
-                        <div class="checkout-btn-row">
-                            <a href="/Pages/Product/cart.html" class="checkout-link" style="text-decoration: none;">Về giỏ hàng</a>
-                            <button type="submit" class="btn btn-danger" style="font-weight:600;">HOÀN TẤT ĐƠN HÀNG</button>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -322,16 +320,16 @@
             }
             
             const formData = {
-                fullName: $('[name="fullname"]').val(),
-                email: $('[name="email"]').val(),
-                phone: $('[name="phone"]').val(),
+                receiverName: $('[name="fullname"]').val(),
+                receiverPhone: $('[name="phone"]').val(),
+                receiverEmail: $('[name="email"]').val(),
                 province: $('[name="province"]').val(),
                 district: $('[name="district"]').val(),
                 address: $('[name="address"]').val(),
                 note: $('[name="note"]').val(),
-                paymentMethod: $('[name="payment"]:checked').attr('id'),
                 deliveryMethod: deliveryMethod,
-                shippingMethod: $('[name="shipping"]:checked').attr('id')
+                shippingMethod: $('[name="shipping"]:checked').attr('id'),
+                paymentMethod: $('[name="payment"]:checked').attr('id') 
             };
             
             Swal.fire({
@@ -350,9 +348,38 @@
                         contentType: 'application/json',
                         data: JSON.stringify(formData),
                         success: function(msg) {
-                            Swal.fire('Thành công!', msg, 'success').then(() => {
-                                window.location.href = '/';
-                            });
+                            if (formData.paymentMethod === 'pay-cod') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Cảm ơn bạn đã đặt hàng!',
+                                    text: 'Đơn hàng của bạn đã được ghi nhận. Chúng tôi sẽ liên hệ và giao hàng sớm nhất.',
+                                    confirmButtonText: 'Về trang chủ'
+                                }).then(() => {
+                                    window.location.href = '/';
+                                });
+                            } else if (formData.paymentMethod === 'pay-bank') {
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Hướng dẫn chuyển khoản',
+                                    html: `
+                                        <div>
+                                            <b>Vui lòng chuyển khoản theo thông tin sau:</b><br>
+                                            <b>Ngân hàng:</b> Vietcombank<br>
+                                            <b>Số tài khoản:</b> 0123456789<br>
+                                            <b>Chủ tài khoản:</b> NGUYEN VAN A<br>
+                                            <b>Nội dung:</b> Thanh toan don hang #MÃ_ĐƠN_HÀNG<br>
+                                            <img src="/path/to/qr-code.png" alt="QR Code" style="width:200px;margin-top:10px;">
+                                        </div>
+                                    `,
+                                    confirmButtonText: 'Về trang chủ'
+                                }).then(() => {
+                                    window.location.href = '/';
+                                });
+                            } else {
+                                Swal.fire('Thành công!', msg, 'success').then(() => {
+                                    window.location.href = '/';
+                                });
+                            }
                         },
                         error: function(xhr) {
                             Swal.fire('Lỗi', xhr.responseText || 'Đặt hàng thất bại', 'error');

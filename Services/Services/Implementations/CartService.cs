@@ -1,6 +1,7 @@
 using BusinessObjects.EntityModel;
 using Repositories.Infrastructure.Interfaces;
 using Services.Services.Interfaces;
+using BusinessObjects.DTOs;
 
 namespace Services.Services.Implementations
 {
@@ -83,21 +84,45 @@ namespace Services.Services.Implementations
             await _cartItemRepository.SaveChangesAsync();
         }
 
-        public async Task<bool> CheckoutAsync()
+        public async Task<bool> CheckoutAsync(CartCheckoutDTO dto)
         {
+            if (dto.DeliveryMethod == "pickup")
+            {
+                dto.Province = "Nhận tại cửa hàng";
+                dto.District = "Nhận tại cửa hàng";
+                dto.Address = "Nhận tại cửa hàng";
+            }
+            
+            if (string.IsNullOrWhiteSpace(dto.Address))
+                dto.Address = "Không xác định";
+            if (string.IsNullOrWhiteSpace(dto.Province))
+                dto.Province = "Không xác định";
+            if (string.IsNullOrWhiteSpace(dto.District))
+                dto.District = "Không xác định";
+
             var cart = await _cartRepository.GetActiveCartByUserIdAsync();
             if (cart == null) return false;
             var items = await _cartItemRepository.GetItemsByCartIdAsync(cart.Id);
             if (!items.Any()) return false;
 
+            decimal shippingFee = 0;
+            if (dto.ShippingMethod == "shipping2")
+                shippingFee = 100000;
+
             var transaction = new Transaction
             {
                 UserId = _cartRepository.GetCurrentUserId(),
-                GoldTypeId = 0, 
-                UnitPrice = 0, 
+                UnitPrice = 0, // hoặc logic phù hợp
                 TotalAmount = 0,
                 TransactionDate = DateTime.UtcNow,
                 Status = "COMPLETED",
+                ReceiverName = dto.ReceiverName,
+                ReceiverPhone = dto.ReceiverPhone,
+                ReceiverEmail = dto.ReceiverEmail,
+                Province = dto.Province,
+                District = dto.District,
+                Address = dto.Address,
+                Note = dto.Note,
                 TransactionDetails = new List<TransactionDetail>()
             };
 
@@ -119,6 +144,8 @@ namespace Services.Services.Implementations
                 transaction.TotalAmount += detail.TotalAmount;
                 transaction.TransactionDetails.Add(detail);
             }
+
+            transaction.TotalAmount += shippingFee; // Cộng phí ship vào tổng tiền
 
             _transactionRepository.Insert(transaction);
             await _transactionRepository.SaveChangesAsync();

@@ -24,7 +24,6 @@ namespace Services.Services.Implementations
             {
                 Id = t.Id,
                 UserId = t.UserId,
-                GoldTypeId = t.GoldTypeId,
                 UnitPrice = t.UnitPrice,
                 TotalAmount = t.TotalAmount,
                 TransactionDate = t.TransactionDate,
@@ -50,7 +49,6 @@ namespace Services.Services.Implementations
             {
                 Id = t.Id,
                 UserId = t.UserId,
-                GoldTypeId = t.GoldTypeId,
                 UnitPrice = t.UnitPrice,
                 TotalAmount = t.TotalAmount,
                 TransactionDate = t.TransactionDate,
@@ -92,7 +90,6 @@ namespace Services.Services.Implementations
             var entity = new Transaction
             {
                 UserId = dto.UserId,
-                GoldTypeId = dto.GoldTypeId,
                 UnitPrice = dto.UnitPrice,
                 TotalAmount = dto.UnitPrice + shippingFee,
                 TransactionDate = dto.TransactionDate,
@@ -115,7 +112,6 @@ namespace Services.Services.Implementations
             var entity = await _repo.GetByIdAsync(dto.Id);
             if (entity == null) return null;
             entity.UserId = dto.UserId;
-            entity.GoldTypeId = dto.GoldTypeId;
             entity.UnitPrice = dto.UnitPrice;
             entity.TotalAmount = dto.TotalAmount;
             entity.TransactionDate = dto.TransactionDate;
@@ -134,7 +130,6 @@ namespace Services.Services.Implementations
             {
                 Id = entity.Id,
                 UserId = entity.UserId,
-                GoldTypeId = entity.GoldTypeId,
                 UnitPrice = entity.UnitPrice,
                 TotalAmount = entity.TotalAmount,
                 TransactionDate = entity.TransactionDate,
@@ -168,7 +163,6 @@ namespace Services.Services.Implementations
             {
                 Id = t.Id,
                 UserId = t.UserId,
-                GoldTypeId = t.GoldTypeId,
                 UnitPrice = t.UnitPrice,
                 TotalAmount = t.TotalAmount,
                 TransactionDate = t.TransactionDate,

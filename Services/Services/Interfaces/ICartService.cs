@@ -1,3 +1,4 @@
+using BusinessObjects.DTOs;
 using BusinessObjects.EntityModel;
 
 namespace Services.Services.Interfaces
@@ -9,6 +10,6 @@ namespace Services.Services.Interfaces
         Task AddOrUpdateCartItemAsync(int cartId, int productId, int quantity, decimal price);
         Task RemoveCartItemAsync(int cartItemId);
         Task ClearCartAsync(int cartId);
-        Task<bool> CheckoutAsync();
+        Task<bool> CheckoutAsync(CartCheckoutDTO dto);
     }
 } 

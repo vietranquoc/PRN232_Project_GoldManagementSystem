@@ -188,6 +188,32 @@
                 }
             });
         });
+
+        $('#buyNowBtn').on('click', function() {
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                window.location.href = '../../Pages/Account/login.html';
+                return;
+            }
+            const productId = getProductIdFromUrl();
+            const quantity = parseInt($('#productQuantity').val()) || 1;
+            let priceText = $('#productPrice').text().replace(/[^\d]/g, '');
+            let price = parseInt(priceText) || 0;
+            $.ajax({
+                url: `https://localhost:5000/api/cart/add?productId=${productId}&quantity=${quantity}&price=${price}`,
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function() {
+                    window.location.href = '/Pages/Product/cart.html';
+                },
+                error: function(xhr) {
+                    let msg = xhr.responseText || 'Lỗi khi thêm vào giỏ hàng!';
+                    alert('Lỗi: ' + msg);
+                }
+            });
+        });
     </script>
 </body>
 </html> 

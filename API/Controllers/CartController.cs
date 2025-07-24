@@ -1,3 +1,4 @@
+using BusinessObjects.DTOs;
 using BusinessObjects.EntityModel;
 using BusinessObjects.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -67,9 +68,9 @@ namespace API.Controllers
         }
 
         [HttpPost("checkout")]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout([FromBody] CartCheckoutDTO dto)
         {
-            var result = await _cartService.CheckoutAsync();
+            var result = await _cartService.CheckoutAsync(dto);
             if (!result)
                 return BadRequest("Checkout thất bại hoặc giỏ hàng trống!");
             return Ok("Đã checkout thành công. Đơn hàng sẽ được xử lý!");
