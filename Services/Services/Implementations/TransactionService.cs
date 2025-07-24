@@ -31,7 +31,14 @@ namespace Services.Services.Implementations
                 Status = t.Status,
                 IsActive = t.IsActive,
                 CreatedDate = t.CreatedDate,
-                UpdatedDate = t.UpdatedDate
+                UpdatedDate = t.UpdatedDate,
+                ReceiverName = t.ReceiverName,
+                ReceiverPhone = t.ReceiverPhone,
+                ReceiverEmail = t.ReceiverEmail,
+                Province = t.Province,
+                District = t.District,
+                Address = t.Address,
+                Note = t.Note
             });
         }
 
@@ -50,20 +57,53 @@ namespace Services.Services.Implementations
                 Status = t.Status,
                 IsActive = t.IsActive,
                 CreatedDate = t.CreatedDate,
-                UpdatedDate = t.UpdatedDate
+                UpdatedDate = t.UpdatedDate,
+                ReceiverName = t.ReceiverName,
+                ReceiverPhone = t.ReceiverPhone,
+                ReceiverEmail = t.ReceiverEmail,
+                Province = t.Province,
+                District = t.District,
+                Address = t.Address,
+                Note = t.Note
             };
         }
 
         public async Task<bool> CreateAsync(CreateTransactionDTO dto)
         {
+            if (dto.DeliveryMethod == "pickup") 
+            {
+                dto.Province = "Nhận tại cửa hàng";
+                dto.District = "";
+                dto.Address = "";
+            } 
+            if (string.IsNullOrWhiteSpace(dto.Province) || 
+                string.IsNullOrWhiteSpace(dto.District) || 
+                string.IsNullOrWhiteSpace(dto.Address))
+            {
+                throw new Exception("Vui lòng nhập đầy đủ địa chỉ giao hàng.");
+            }
+
+            decimal shippingFee = 0;
+            if (dto.ShippingMethod == "shipping2")
+            {
+                shippingFee = 100000;
+            }
+
             var entity = new Transaction
             {
                 UserId = dto.UserId,
                 GoldTypeId = dto.GoldTypeId,
                 UnitPrice = dto.UnitPrice,
-                TotalAmount = dto.Weight * dto.UnitPrice,
+                TotalAmount = dto.UnitPrice + shippingFee,
                 TransactionDate = dto.TransactionDate,
-                Status = dto.Status
+                Status = dto.Status,
+                ReceiverName = dto.ReceiverName,
+                ReceiverPhone = dto.ReceiverPhone,
+                ReceiverEmail = dto.ReceiverEmail,
+                Province = dto.Province,
+                District = dto.District,
+                Address = dto.Address,
+                Note = dto.Note
             };
             _repo.Insert(entity);
             await _repo.SaveChangesAsync();
@@ -81,6 +121,13 @@ namespace Services.Services.Implementations
             entity.TransactionDate = dto.TransactionDate;
             entity.Status = dto.Status;
             entity.IsActive = dto.IsActive;
+            entity.ReceiverName = dto.ReceiverName;
+            entity.ReceiverPhone = dto.ReceiverPhone;
+            entity.ReceiverEmail = dto.ReceiverEmail;
+            entity.Province = dto.Province;
+            entity.District = dto.District;
+            entity.Address = dto.Address;
+            entity.Note = dto.Note;
             _repo.Update(entity);
             await _repo.SaveChangesAsync();
             return new TransactionViewModel
@@ -94,7 +141,14 @@ namespace Services.Services.Implementations
                 Status = entity.Status,
                 IsActive = entity.IsActive,
                 CreatedDate = entity.CreatedDate,
-                UpdatedDate = entity.UpdatedDate
+                UpdatedDate = entity.UpdatedDate,
+                ReceiverName = entity.ReceiverName,
+                ReceiverPhone = entity.ReceiverPhone,
+                ReceiverEmail = entity.ReceiverEmail,
+                Province = entity.Province,
+                District = entity.District,
+                Address = entity.Address,
+                Note = entity.Note
             };
         }
 
@@ -121,7 +175,14 @@ namespace Services.Services.Implementations
                 Status = t.Status,
                 IsActive = t.IsActive,
                 CreatedDate = t.CreatedDate,
-                UpdatedDate = t.UpdatedDate
+                UpdatedDate = t.UpdatedDate,
+                ReceiverName = t.ReceiverName,
+                ReceiverPhone = t.ReceiverPhone,
+                ReceiverEmail = t.ReceiverEmail,
+                Province = t.Province,
+                District = t.District,
+                Address = t.Address,
+                Note = t.Note
             });
         }
     }

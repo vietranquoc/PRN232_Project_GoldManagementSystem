@@ -17,7 +17,7 @@
                 <div class="checkout-title">
                     <i class="fas fa-gem me-2"></i>GoldTrack
                 </div>
-                <div class="checkout-breadcrumb"><a href="/Pages/Product/cart.html" style="text-decoration: none;">Về giỏ hàng</a> &gt; Thông tin giao hàng</div>
+                <div class="checkout-breadcrumb"><a href="/Pages/Product/cart.html" style="text-decoration: none; color: #FFD700;">Về giỏ hàng</a> &gt; Thông tin giao hàng</div>
                 <div class="card checkout-card mb-4">
                     <div class="card-body">
                         <form id="checkout-form">
@@ -109,8 +109,6 @@
                                 <div class="col-md-6">
                                     <select class="form-select checkout-select" name="district" required>
                                         <option value="">Quận / Huyện</option>
-                                        <option>Quận Ba Đình</option>
-                                        <option>Quận 1</option>
                                     </select>
                                 </div>
                             </div>
@@ -131,7 +129,7 @@
                                     <div class="form-check">
                                         <input class="form-check-input checkout-radio" type="radio" name="shipping" id="shipping2">
                                         <label class="form-check-label" for="shipping2">
-                                            Miễn phí giao hàng trong 2 giờ
+                                            Giao hàng hỏa tốc trong 2 giờ <span class="text-muted" style="font-size:0.95em;">(100.000đ)</span>
                                         </label>
                                     </div>
                                 </div>
@@ -148,9 +146,9 @@
                                 </div>
                                 <div class="card p-3" style="border-radius:8px; border:1px solid #f3eaea;">
                                     <div class="form-check">
-                                        <input class="form-check-input checkout-radio" type="radio" name="payment" id="pay-apple">
-                                        <label class="form-check-label" for="pay-apple">
-                                            <i class="fab fa-apple-pay me-1"></i> Apple Pay
+                                        <input class="form-check-input checkout-radio" type="radio" name="payment" id="pay-cod">
+                                        <label class="form-check-label" for="pay-cod">
+                                            <i class="fas fa-wallet me-1"></i> Thanh toán khi nhận hàng
                                         </label>
                                     </div>
                                 </div>
@@ -204,16 +202,33 @@
     <script src="../../js/main.js"></script>
     <script>
         
+        let deliveryMethod = "delivery"; 
+        let checkoutTotal = 0;
+        
         function getToken() {
             return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
         }
+
+        function updateShippingFeeDisplay() {
+            let shippingFee = 0;
+            if ($('[name="shipping"]:checked').attr('id') === 'shipping2') {
+                $('#summary-shipping').text('100.000đ');
+                shippingFee = 100000;
+            } else {
+                $('#summary-shipping').text('Miễn phí');
+            }
+            
+            const grandTotal = checkoutTotal + shippingFee;
+            $('#summary-grand').text(Number(grandTotal).toLocaleString('vi-VN') + 'đ');
+        }
         
-        // Hiển thị sản phẩm giỏ hàng
         function loadCheckoutCart() {
             const token = getToken();
             if (!token) {
                 $('#checkout-cart-list').html('<div class="alert alert-warning">Bạn cần đăng nhập để thanh toán.</div>');
                 $('#summary-total, #summary-grand').text('0đ');
+                checkoutTotal = 0;
+                updateShippingFeeDisplay();
                 return;
             }
             $.ajax({
@@ -224,6 +239,8 @@
                     if (!data.items || data.items.length === 0) {
                         $('#checkout-cart-list').html('<div class="alert alert-info">Giỏ hàng của bạn đang trống.</div>');
                         $('#summary-total, #summary-grand').text('0đ');
+                        checkoutTotal = 0;
+                        updateShippingFeeDisplay();
                         return;
                     }
                     let html = '';
@@ -244,75 +261,20 @@
                     });
                     $('#checkout-cart-list').html(html);
                     $('#summary-total').text(Number(total).toLocaleString('vi-VN') + 'đ');
-                    $('#summary-grand').text(Number(total).toLocaleString('vi-VN') + 'đ');
+                    checkoutTotal = total;
+                    updateShippingFeeDisplay();
                 },
                 error: function() {
                     $('#checkout-cart-list').html('<div class="alert alert-danger">Không thể tải giỏ hàng.</div>');
                     $('#summary-total, #summary-grand').text('0đ');
+                    checkoutTotal = 0;
+                    updateShippingFeeDisplay();
                 }
             });
         }
         
-        // Xử lý hoàn tất đơn hàng
-        $('#checkout-form').on('submit', function(e) {
-            e.preventDefault();
-            const token = getToken();
-            if (!token) {
-                Swal.fire('Bạn cần đăng nhập để đặt hàng!', '', 'warning');
-                return;
-            }
-            // Thu thập dữ liệu form
-            const formData = {
-                fullName: $('[name="fullname"]').val(),
-                email: $('[name="email"]').val(),
-                phone: $('[name="phone"]').val(),
-                province: $('[name="province"]').val(),
-                district: $('[name="district"]').val(),
-                address: $('[name="address"]').val(),
-                note: $('[name="note"]').val(),
-                exportInvoice: $('#export-invoice').is(':checked'),
-                agreePrivacy: $('#agree-privacy').is(':checked'),
-                agreePolicy: $('#agree-policy').is(':checked'),
-                agreePromo: $('#agree-promo').is(':checked'),
-                paymentMethod: $('[name="payment"]:checked').attr('id')
-            };
-            // Kiểm tra điều khoản
-            if (!formData.agreePrivacy || !formData.agreePolicy) {
-                Swal.fire('Bạn phải đồng ý với các điều khoản để tiếp tục!', '', 'warning');
-                return;
-            }
-            // Gửi yêu cầu thanh toán
-            Swal.fire({
-                title: 'Xác nhận đặt hàng?',
-                text: 'Bạn có chắc chắn muốn hoàn tất đơn hàng?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Đặt hàng',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: 'https://localhost:5000/api/cart/checkout',
-                        method: 'POST',
-                        headers: { 'Authorization': 'Bearer ' + token },
-                        contentType: 'application/json',
-                        data: JSON.stringify(formData),
-                        success: function(msg) {
-                            Swal.fire('Thành công!', msg, 'success').then(() => {
-                                window.location.href = '/'; // hoặc chuyển sang trang cảm ơn
-                            });
-                        },
-                        error: function(xhr) {
-                            Swal.fire('Lỗi', xhr.responseText || 'Đặt hàng thất bại', 'error');
-                        }
-                    });
-                }
-            });
-        });
-        
         $(document).ready(function() {
             loadCheckoutCart();
-            // Cập nhật districtsByProvince dùng mã tỉnh/thành
             const districtsByProvince = {
                 "01": [
                     "Ba Đình", "Hoàn Kiếm", "Tây Hồ", "Long Biên", "Cầu Giấy", "Đống Đa", "Hai Bà Trưng", "Hoàng Mai", "Thanh Xuân", "Nam Từ Liêm", "Bắc Từ Liêm", "Hà Đông", "Sơn Tây", "Ba Vì", "Chương Mỹ", "Đan Phượng", "Đông Anh", "Gia Lâm", "Hoài Đức", "Mê Linh", "Mỹ Đức", "Phú Xuyên", "Phúc Thọ", "Quốc Oai", "Sóc Sơn", "Thạch Thất", "Thanh Oai", "Thanh Trì", "Thường Tín", "Ứng Hòa"
@@ -330,6 +292,73 @@
                 districts.forEach(function(district) {
                     $districtSelect.append('<option value="' + district + '">' + district + '</option>');
                 });
+            });
+
+            // Sự kiện chọn phương thức giao hàng
+            $('#btn-delivery').on('click', function() {
+                deliveryMethod = "delivery";
+                $(this).addClass('active');
+                $('#btn-pickup').removeClass('active');
+                $('[name="province"], [name="district"], [name="address"]').prop('disabled', false);
+            });
+            $('#btn-pickup').on('click', function() {
+                deliveryMethod = "pickup";
+                $(this).addClass('active');
+                $('#btn-delivery').removeClass('active');
+                $('[name="province"], [name="district"], [name="address"]').prop('disabled', true);
+            });
+
+            // Sự kiện thay đổi phương thức vận chuyển
+            $('[name="shipping"]').on('change', updateShippingFeeDisplay);
+            updateShippingFeeDisplay();
+        });
+        
+        $('#checkout-form').on('submit', function(e) {
+            e.preventDefault();
+            const token = getToken();
+            if (!token) {
+                Swal.fire('Bạn cần đăng nhập để đặt hàng!', '', 'warning');
+                return;
+            }
+            
+            const formData = {
+                fullName: $('[name="fullname"]').val(),
+                email: $('[name="email"]').val(),
+                phone: $('[name="phone"]').val(),
+                province: $('[name="province"]').val(),
+                district: $('[name="district"]').val(),
+                address: $('[name="address"]').val(),
+                note: $('[name="note"]').val(),
+                paymentMethod: $('[name="payment"]:checked').attr('id'),
+                deliveryMethod: deliveryMethod,
+                shippingMethod: $('[name="shipping"]:checked').attr('id')
+            };
+            
+            Swal.fire({
+                title: 'Xác nhận đặt hàng?',
+                text: 'Bạn có chắc chắn muốn hoàn tất đơn hàng?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Đặt hàng',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: 'https://localhost:5000/api/cart/checkout',
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token },
+                        contentType: 'application/json',
+                        data: JSON.stringify(formData),
+                        success: function(msg) {
+                            Swal.fire('Thành công!', msg, 'success').then(() => {
+                                window.location.href = '/';
+                            });
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Lỗi', xhr.responseText || 'Đặt hàng thất bại', 'error');
+                        }
+                    });
+                }
             });
         });
         </script>

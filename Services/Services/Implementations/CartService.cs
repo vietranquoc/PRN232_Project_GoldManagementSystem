@@ -93,8 +93,8 @@ namespace Services.Services.Implementations
             var transaction = new Transaction
             {
                 UserId = _cartRepository.GetCurrentUserId(),
-                GoldTypeId = 0, // Nếu cần, có thể lấy GoldTypeId đầu tiên hoặc bỏ trường này
-                UnitPrice = 0, // Không dùng nữa, chỉ để tránh lỗi nếu entity còn trường này
+                GoldTypeId = 0, 
+                UnitPrice = 0, 
                 TotalAmount = 0,
                 TransactionDate = DateTime.UtcNow,
                 Status = "COMPLETED",
