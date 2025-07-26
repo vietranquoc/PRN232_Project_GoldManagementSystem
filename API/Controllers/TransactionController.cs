@@ -57,5 +57,29 @@ namespace API.Controllers
             if (!deleted) return NotFound();
             return Ok(deleted);
         }
+
+        [HttpGet("statistics")]
+        [Authorize(Roles = "Manager,Employee")]
+        public async Task<IActionResult> GetStatistics()
+        {
+            var result = await _service.GetStatisticsAsync();
+            return Ok(result);
+        }
+
+        [HttpGet("recent")]
+        [Authorize(Roles = "Manager,Employee")]
+        public async Task<IActionResult> GetRecentTransactions()
+        {
+            var result = await _service.GetRecentAsync(5);
+            return Ok(result);
+        }
+
+        [HttpGet("daily-revenue")]
+        [Authorize(Roles = "Manager,Employee")]
+        public async Task<IActionResult> GetDailyRevenue([FromQuery] int days = 30)
+        {
+            var result = await _service.GetDailyRevenueAsync(days);
+            return Ok(result);
+        }
     }
 } 

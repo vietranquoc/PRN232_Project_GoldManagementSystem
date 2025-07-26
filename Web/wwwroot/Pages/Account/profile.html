@@ -12,7 +12,7 @@
     <a href="../../Pages/Home/index.html" class="btn btn-secondary btn-home-fixed">← Về trang chủ</a>
     <div class="container py-5">
         <div class="row justify-content-center">
-            <div class="col-md-6">
+            <div class="col-md-4 mb-4 mb-md-0">
                 <div class="card profile-card">
                     <div class="card-header text-center profile-header">
                         <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile" class="profile-avatar">
@@ -41,9 +41,32 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-8">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5>Lịch sử giao dịch của bạn</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Ngày</th>
+                                        <th>Sản phẩm</th>
+                                        <th>Số tiền</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="user-transactions">
+                                    <tr><td colspan="4" class="text-center text-muted">Đang tải...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
     <!-- Modal chỉnh sửa thông tin -->
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -86,10 +109,39 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function renderProfile(data) {
-            $("#fullName").text(data.FullName || data.fullName || "");
-            $("#email").text(data.Email || data.email || "");
-            $("#phone").text(data.PhoneNumber || data.phoneNumber || data.Phone || data.phone || "");
-            $("#address").text(data.Address || data.address || "");
+            $("#fullName").text(data.fullName || data.FullName || "");
+            $("#email").text(data.email || data.Email || "");
+            $("#phone").text(data.phone || data.Phone || data.phoneNumber || data.PhoneNumber || "");
+            $("#address").text(data.address || data.Address || "");
+        }
+
+        function loadUserTransactions(userId, token) {
+            $.ajax({
+                url: 'https://localhost:5000/api/Transaction/user/' + userId,
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(transactions) {
+                    const tbody = $('#user-transactions');
+                    if (!transactions || transactions.length === 0) {
+                        tbody.html('<tr><td colspan="4" class="text-center text-muted">Bạn chưa có giao dịch nào.</td></tr>');
+                        return;
+                    }
+                    tbody.empty();
+                    transactions.forEach(tran => {
+                        tbody.append(`
+                            <tr style="cursor:pointer" onclick="window.location.href='transactionDetail.html?id=${tran.id}'">
+                                <td>${tran.transactionDate ? tran.transactionDate.split('T')[0] : ''}</td>
+                                <td>${tran.productNames && tran.productNames.length > 0 ? tran.productNames.join(', ') : ''}</td>
+                                <td>${tran.totalAmount ? tran.totalAmount.toLocaleString('vi-VN') + 'đ' : ''}</td>
+                                <td><span class="badge ${tran.status === 'COMPLETED' ? 'bg-success' : 'bg-warning text-dark'}">${tran.status === 'COMPLETED' ? 'Hoàn thành' : 'Chờ xử lý'}</span></td>
+                            </tr>
+                        `);
+                    });
+                },
+                error: function() {
+                    $('#user-transactions').html('<tr><td colspan="4" class="text-center text-danger">Không thể tải lịch sử giao dịch.</td></tr>');
+                }
+            });
         }
 
         $(document).ready(function() {
@@ -109,52 +161,40 @@
                 });
                 return;
             }
-            // Lấy thông tin từ payload của token
-            function parseJwt(token) {
-                try {
-                    console.log('Parsing token:', token);
-                    const parts = token.split('.');
-                    console.log('Token parts count:', parts.length);
-                    if (parts.length !== 3) {
-                        console.error('Token không đúng định dạng JWT (cần 3 phần)');
-                        return null;
+            // Lấy thông tin user từ API
+            $.ajax({
+                url: 'https://localhost:5000/api/Account/profile',
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(profile) {
+                    renderProfile(profile);
+                    // Nút chỉnh sửa: Đổ dữ liệu từ profile vào modal
+                    $('#editBtn').off('click').on('click', function() {
+                        $('#editFullName').val(profile.fullName || profile.FullName || "");
+                        $('#editEmail').val(profile.email || profile.Email || "");
+                        $('#editPhone').val(profile.phone || profile.Phone || profile.phoneNumber || profile.PhoneNumber || "");
+                        $('#editAddress').val(profile.address || profile.Address || "");
+                        $('#editProfileMessage').addClass('d-none').text("");
+                        var modal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+                        modal.show();
+                    });
+                    // Lấy lịch sử giao dịch
+                    if (profile.id || profile.userId || profile.UserId) {
+                        var userId = profile.id || profile.userId || profile.UserId;
+                        loadUserTransactions(userId, token);
                     }
-                    const payload = parts[1];
-                    console.log('Payload part:', payload);
-                    const decoded = atob(payload);
-                    console.log('Decoded payload:', decoded);
-                    return JSON.parse(decoded);
-                } catch (e) { 
-                    console.error('Lỗi parse JWT:', e);
-                    return null; 
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Không thể tải thông tin cá nhân',
+                        text: 'Vui lòng đăng nhập lại.',
+                        confirmButtonText: 'Đăng nhập'
+                    }).then(() => {
+                        localStorage.removeItem('accessToken');
+                        window.location.href = "login.html";
+                    });
                 }
-            }
-            // alert('Token: ' + token);
-            let payload = parseJwt(token);
-            // alert('Payload: ' + JSON.stringify(payload));
-            if (!payload) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Token không hợp lệ',
-                    text: 'Vui lòng đăng nhập lại.',
-                    confirmButtonText: 'Đăng nhập'
-                }).then(() => {
-                    localStorage.removeItem('accessToken');
-                    window.location.href = "login.html";
-                });
-                return;
-            }
-            renderProfile(payload);
-
-            // Nút chỉnh sửa: Đổ dữ liệu từ payload vào modal
-            $('#editBtn').click(function() {
-                $('#editFullName').val(payload.FullName || payload.fullName || "");
-                $('#editEmail').val(payload.Email || payload.email || "");
-                $('#editPhone').val(payload.PhoneNumber || payload.phoneNumber || payload.Phone || payload.phone || "");
-                $('#editAddress').val(payload.Address || payload.address || "");
-                $('#editProfileMessage').addClass('d-none').text("");
-                var modal = new bootstrap.Modal(document.getElementById('editProfileModal'));
-                modal.show();
             });
 
             // Submit cập nhật: vẫn gọi API update-profile như cũ
@@ -174,12 +214,19 @@
                     data: JSON.stringify(updateData),
                     success: function() {
                         $('#editProfileMessage').removeClass('d-none alert-danger').addClass('alert-success').text('Cập nhật thành công!');
-                        // Cập nhật lại thông tin ngoài profile (chỉ cập nhật trên giao diện, JWT không đổi)
-                        payload.FullName = updateData.fullName;
-                        payload.Email = updateData.email;
-                        payload.PhoneNumber = updateData.phone;
-                        payload.Address = updateData.address;
-                        renderProfile(payload);
+                        // Reload lại profile và giao dịch
+                        $.ajax({
+                            url: 'https://localhost:5000/api/Account/profile',
+                            method: 'GET',
+                            headers: { 'Authorization': 'Bearer ' + token },
+                            success: function(profile) {
+                                renderProfile(profile);
+                                if (profile.id || profile.userId || profile.UserId) {
+                                    var userId = profile.id || profile.userId || profile.UserId;
+                                    loadUserTransactions(userId, token);
+                                }
+                            }
+                        });
                         setTimeout(function() {
                             var modalEl = document.getElementById('editProfileModal');
                             var modal = bootstrap.Modal.getInstance(modalEl);

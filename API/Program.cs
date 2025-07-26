@@ -51,6 +51,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICartItemService, CartItemService>();
+builder.Services.AddScoped<IVNPayService, VNPayService>();
 
 // Thêm xác thực JWT
 builder.Services.AddAuthentication(options =>

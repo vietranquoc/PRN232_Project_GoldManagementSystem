@@ -298,12 +298,14 @@
                 $(this).addClass('active');
                 $('#btn-pickup').removeClass('active');
                 $('[name="province"], [name="district"], [name="address"]').prop('disabled', false);
+                $('[name="shipping"]').prop('disabled', false);
             });
             $('#btn-pickup').on('click', function() {
                 deliveryMethod = "pickup";
                 $(this).addClass('active');
                 $('#btn-delivery').removeClass('active');
                 $('[name="province"], [name="district"], [name="address"]').prop('disabled', true);
+                $('[name="shipping"]').prop('disabled', true);
             });
 
             // Sự kiện thay đổi phương thức vận chuyển
@@ -347,7 +349,7 @@
                         headers: { 'Authorization': 'Bearer ' + token },
                         contentType: 'application/json',
                         data: JSON.stringify(formData),
-                        success: function(msg) {
+                        success: function(response) {
                             if (formData.paymentMethod === 'pay-cod') {
                                 Swal.fire({
                                     icon: 'success',
@@ -358,25 +360,38 @@
                                     window.location.href = '/';
                                 });
                             } else if (formData.paymentMethod === 'pay-bank') {
-                                Swal.fire({
-                                    icon: 'info',
-                                    title: 'Hướng dẫn chuyển khoản',
-                                    html: `
-                                        <div>
-                                            <b>Vui lòng chuyển khoản theo thông tin sau:</b><br>
-                                            <b>Ngân hàng:</b> Vietcombank<br>
-                                            <b>Số tài khoản:</b> 0123456789<br>
-                                            <b>Chủ tài khoản:</b> NGUYEN VAN A<br>
-                                            <b>Nội dung:</b> Thanh toan don hang #MÃ_ĐƠN_HÀNG<br>
-                                            <img src="/path/to/qr-code.png" alt="QR Code" style="width:200px;margin-top:10px;">
-                                        </div>
-                                    `,
-                                    confirmButtonText: 'Về trang chủ'
-                                }).then(() => {
-                                    window.location.href = '/';
+                                // Tạo thanh toán VNPAY
+                                $.ajax({
+                                    url: 'https://localhost:5000/api/payment/create-vnpay-payment',
+                                    method: 'POST',
+                                    headers: { 'Authorization': 'Bearer ' + token },
+                                    contentType: 'application/json',
+                                    data: JSON.stringify({
+                                        orderId: response.orderId,
+                                        amount: response.totalAmount,
+                                        orderInfo: 'Thanh toan don hang GoldTrack #' + response.orderId
+                                    }),
+                                    success: function(vnpayResponse) {
+                                        if (vnpayResponse.isSuccess) {
+                                            Swal.fire({
+                                                icon: 'info',
+                                                title: 'Chuyển hướng đến VNPAY',
+                                                text: 'Bạn sẽ được chuyển hướng đến trang thanh toán VNPAY trong giây lát...',
+                                                timer: 2000,
+                                                showConfirmButton: false
+                                            }).then(() => {
+                                                window.location.href = vnpayResponse.paymentUrl;
+                                            });
+                                        } else {
+                                            Swal.fire('Lỗi', 'Không thể tạo thanh toán VNPAY', 'error');
+                                        }
+                                    },
+                                    error: function(xhr) {
+                                        Swal.fire('Lỗi', xhr.responseJSON?.message || 'Không thể tạo thanh toán VNPAY', 'error');
+                                    }
                                 });
                             } else {
-                                Swal.fire('Thành công!', msg, 'success').then(() => {
+                                Swal.fire('Thành công!', response.message, 'success').then(() => {
                                     window.location.href = '/';
                                 });
                             }

@@ -70,10 +70,15 @@ namespace API.Controllers
         [HttpPost("checkout")]
         public async Task<IActionResult> Checkout([FromBody] CartCheckoutDTO dto)
         {
-            var result = await _cartService.CheckoutAsync(dto);
-            if (!result)
+            var transaction = await _cartService.CheckoutAsync(dto);
+            if (transaction == null)
                 return BadRequest("Checkout thất bại hoặc giỏ hàng trống!");
-            return Ok("Đã checkout thành công. Đơn hàng sẽ được xử lý!");
+            
+            return Ok(new { 
+                message = "Đã checkout thành công. Đơn hàng sẽ được xử lý!",
+                orderId = transaction.Id.ToString(),
+                totalAmount = transaction.TotalAmount
+            });
         }
     }
 } 

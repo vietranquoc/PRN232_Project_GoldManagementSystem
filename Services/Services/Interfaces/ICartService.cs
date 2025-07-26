@@ -10,6 +10,6 @@ namespace Services.Services.Interfaces
         Task AddOrUpdateCartItemAsync(int cartId, int productId, int quantity, decimal price);
         Task RemoveCartItemAsync(int cartItemId);
         Task ClearCartAsync(int cartId);
-        Task<bool> CheckoutAsync(CartCheckoutDTO dto);
+        Task<Transaction> CheckoutAsync(CartCheckoutDTO dto);
     }
 } 

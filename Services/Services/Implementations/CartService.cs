@@ -84,7 +84,7 @@ namespace Services.Services.Implementations
             await _cartItemRepository.SaveChangesAsync();
         }
 
-        public async Task<bool> CheckoutAsync(CartCheckoutDTO dto)
+        public async Task<Transaction> CheckoutAsync(CartCheckoutDTO dto)
         {
             if (dto.DeliveryMethod == "pickup")
             {
@@ -101,9 +101,9 @@ namespace Services.Services.Implementations
                 dto.District = "Không xác định";
 
             var cart = await _cartRepository.GetActiveCartByUserIdAsync();
-            if (cart == null) return false;
+            if (cart == null) return null;
             var items = await _cartItemRepository.GetItemsByCartIdAsync(cart.Id);
-            if (!items.Any()) return false;
+            if (!items.Any()) return null;
 
             decimal shippingFee = 0;
             if (dto.ShippingMethod == "shipping2")
@@ -115,7 +115,7 @@ namespace Services.Services.Implementations
                 UnitPrice = 0, // hoặc logic phù hợp
                 TotalAmount = 0,
                 TransactionDate = DateTime.UtcNow,
-                Status = "COMPLETED",
+                Status = "PENDING", // Thay đổi status thành PENDING
                 ReceiverName = dto.ReceiverName,
                 ReceiverPhone = dto.ReceiverPhone,
                 ReceiverEmail = dto.ReceiverEmail,
@@ -151,7 +151,7 @@ namespace Services.Services.Implementations
             await _transactionRepository.SaveChangesAsync();
             await _productRepository.SaveChangesAsync();
             await ClearCartAsync(cart.Id);
-            return true;
+            return transaction;
         }
     }
 } 

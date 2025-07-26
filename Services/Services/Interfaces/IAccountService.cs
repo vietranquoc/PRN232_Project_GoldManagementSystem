@@ -12,5 +12,6 @@ namespace Services.Services.Interfaces
         Task UpdateProfileAsync(int userId, UpdateProfileDTO dto);
         Task ForgotPasswordAsync(ForgotPasswordDTO dto);
         Task LogoutAsync(int userId);
+        Task<UserDTO> GetProfileAsync(int userId);
     }
 }

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết giao dịch | GoldTrack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../css/profile.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container py-5">
+        <button id="backBtn" class="btn btn-secondary mb-3">← Quay lại</button>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-warning text-dark">
+                        <h4 class="mb-0">Chi tiết giao dịch</h4>
+                    </div>
+                    <div class="card-body" id="transaction-detail-body">
+                        <div class="text-center text-muted"><span class="spinner-border spinner-border-sm text-warning"></span> Đang tải...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function getRoleFromToken(token) {
+            if (!token) return null;
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                return payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || null;
+            } catch (e) { return null; }
+        }
+        function getTransactionIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id');
+        }
+        function renderTransactionDetail(tran) {
+            let html = `<dl class='row'>
+                <dt class='col-sm-4'>Mã giao dịch</dt><dd class='col-sm-8'>${tran.id}</dd>
+                <dt class='col-sm-4'>Ngày giao dịch</dt><dd class='col-sm-8'>${tran.transactionDate ? tran.transactionDate.split('T')[0] : ''}</dd>
+                <dt class='col-sm-4'>Tên người nhận</dt><dd class='col-sm-8'>${tran.receiverName || ''}</dd>
+                <dt class='col-sm-4'>Số điện thoại</dt><dd class='col-sm-8'>${tran.receiverPhone || ''}</dd>
+                <dt class='col-sm-4'>Email</dt><dd class='col-sm-8'>${tran.receiverEmail || ''}</dd>
+                <dt class='col-sm-4'>Địa chỉ</dt><dd class='col-sm-8'>${tran.address ? `${tran.address}, ${tran.district}, ${tran.province}` : ''}</dd>
+            </dl>`;
+            if (tran.details && tran.details.length > 0) {
+                html += `<div class='mb-3'><b>Chi tiết sản phẩm:</b>
+                <div class='table-responsive'><table class='table table-bordered'>
+                    <thead><tr><th>Tên sản phẩm</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead>
+                    <tbody>`;
+                tran.details.forEach(function(d) {
+                    html += `<tr>
+                        <td>${d.productName}</td>
+                        <td>${d.quantity}</td>
+                        <td>${Number(d.unitPrice).toLocaleString('vi-VN')} VNĐ</td>
+                        <td>${Number(d.totalAmount).toLocaleString('vi-VN')} VNĐ</td>
+                    </tr>`;
+                });
+                html += `</tbody></table></div></div>`;
+            }
+            html += `<dl class='row'>
+                <dt class='col-sm-4'>Tổng tiền</dt><dd class='col-sm-8'>${tran.totalAmount ? Number(tran.totalAmount).toLocaleString('vi-VN') + ' VNĐ' : ''}</dd>
+                <dt class='col-sm-4'>Trạng thái</dt><dd class='col-sm-8'><span class='badge ${tran.status === 'COMPLETED' ? 'bg-success' : 'bg-warning text-dark'}'>${tran.status === 'COMPLETED' ? 'Hoàn thành' : 'Chờ xử lý'}</span></dd>
+                <dt class='col-sm-4'>Ghi chú</dt><dd class='col-sm-8'>${tran.note || ''}</dd>
+            </dl>`;
+            $('#transaction-detail-body').html(html);
+        }
+        $(document).ready(function() {
+            const id = getTransactionIdFromUrl();
+            const token = localStorage.getItem('accessToken');
+            const role = getRoleFromToken(token);
+            
+            $('#backBtn').off('click').on('click', function() {
+                if (role && role.toLowerCase() === 'customer') {
+                    window.location.href = 'profile.html';
+                } else {
+                    window.location.href = '/Pages/Manager/manager.html';
+                }
+            });
+            if (!id) {
+                $('#transaction-detail-body').html('<div class="text-danger">Không tìm thấy mã giao dịch.</div>');
+                return;
+            }
+            $.ajax({
+                url: `https://localhost:5000/api/Transaction/${id}`,
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token },
+                success: function(tran) {
+                    renderTransactionDetail(tran);
+                },
+                error: function() {
+                    $('#transaction-detail-body').html('<div class="text-danger">Không thể tải chi tiết giao dịch.</div>');
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

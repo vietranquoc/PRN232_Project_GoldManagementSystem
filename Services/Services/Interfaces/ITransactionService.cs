@@ -13,5 +13,9 @@ namespace Services.Services.Interfaces
         Task<TransactionViewModel> UpdateAsync(UpdateTransactionDTO dto);
         Task<bool> DeleteAsync(int id);
         Task<IEnumerable<TransactionViewModel>> GetByUserIdAsync(int userId);
+        Task<IEnumerable<TransactionViewModel>> GetRecentAsync(int count);
+        Task<object> GetStatisticsAsync();
+        Task<bool> UpdateTransactionStatusAsync(int transactionId, string status);
+        Task<IEnumerable<object>> GetDailyRevenueAsync(int days = 30);
     }
 }

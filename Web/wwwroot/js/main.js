@@ -37,7 +37,7 @@ function loadProductCategoriesDropdown() {
             }
             let html = '';
             data.forEach(function(cat) {
-                html += `<li><a class="dropdown-item" href="/collections/category/${cat.id}">${cat.name}</a></li>`;
+                html += `<li><a class="dropdown-item" >${cat.name}</a></li>`;
             });
             ul.html(html);
         },
