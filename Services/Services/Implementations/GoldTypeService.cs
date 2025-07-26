@@ -1,10 +1,13 @@
 using BusinessObjects.DTOs;
 using BusinessObjects.EntityModel;
 using BusinessObjects.ViewModels;
+using Microsoft.Extensions.Configuration;
 using Repositories.Infrastructure.Interfaces;
 using Services.Services.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Services.Services.Implementations
@@ -97,4 +100,4 @@ namespace Services.Services.Implementations
             return true;
         }
     }
-} 
+}

@@ -1,10 +1,13 @@
 ﻿using BusinessObjects.DTOs;
 using BusinessObjects.EntityModel;
 using BusinessObjects.ViewModels;
+using Microsoft.Extensions.Configuration;
 using Repositories.Infrastructure.Interfaces;
 using Services.Services.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Services.Services.Implementations
@@ -12,9 +15,13 @@ namespace Services.Services.Implementations
     public class GoldPriceService : IGoldPriceService
     {
         private readonly IGoldPriceRepository _repo;
-        public GoldPriceService(IGoldPriceRepository repo)
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
+        public GoldPriceService(IGoldPriceRepository repo, HttpClient httpClient, IConfiguration config)
         {
             _repo = repo;
+            _httpClient = httpClient;
+            _config = config;
         }
 
         public async Task<IEnumerable<GoldPriceViewModel>> GetAllAsync()
@@ -116,6 +123,27 @@ namespace Services.Services.Implementations
                 CreatedDate = latest.CreatedDate,
                 UpdatedDate = latest.UpdatedDate
             };
+        }
+
+        public async Task<decimal?> GetGoldPriceInVNDAsync()
+        {
+            var apiKey = _config["GoldApi:APIKey"];
+            var url = _config["GoldApi:Url"];
+
+            var request = new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(url),
+            };
+
+            request.Headers.Add("x-access-token", apiKey);
+            var response = await _httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode) return null;
+
+            var content = await response.Content.ReadAsStringAsync();
+            var json = JsonDocument.Parse(content);
+
+            return json.RootElement.GetProperty("price").GetDecimal();
         }
     }
 }
