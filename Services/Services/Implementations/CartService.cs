@@ -43,11 +43,34 @@ namespace Services.Services.Implementations
 
         public async Task AddOrUpdateCartItemAsync(int cartId, int productId, int quantity, decimal price)
         {
+            // Kiểm tra stock của sản phẩm
+            var product = await _productRepository.GetByIdAsync(productId);
+            if (product == null)
+                throw new InvalidOperationException("Sản phẩm không tồn tại");
+            
+            if (product.Quantity <= 0)
+                throw new InvalidOperationException("Sản phẩm đã hết hàng");
+            
             var items = await _cartItemRepository.GetItemsByCartIdAsync(cartId);
             var item = items.FirstOrDefault(i => i.ProductId == productId);
+            
+            int newQuantity;
             if (item != null)
             {
-                item.Quantity += quantity;
+                newQuantity = item.Quantity + quantity;
+            }
+            else
+            {
+                newQuantity = quantity;
+            }
+            
+            // Kiểm tra xem tổng số lượng có vượt quá stock không
+            if (newQuantity > product.Quantity)
+                throw new InvalidOperationException($"Chỉ còn {product.Quantity} sản phẩm trong kho");
+            
+            if (item != null)
+            {
+                item.Quantity = newQuantity;
                 _cartItemRepository.Update(item);
             }
             else

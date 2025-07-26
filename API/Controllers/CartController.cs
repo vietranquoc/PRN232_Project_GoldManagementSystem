@@ -47,9 +47,20 @@ namespace API.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddOrUpdateCartItem(int productId, int quantity, decimal price)
         {
-            var cart = await _cartService.GetOrCreateActiveCartAsync();
-            await _cartService.AddOrUpdateCartItemAsync(cart.Id, productId, quantity, price);
-            return Ok();
+            try
+            {
+                var cart = await _cartService.GetOrCreateActiveCartAsync();
+                await _cartService.AddOrUpdateCartItemAsync(cart.Id, productId, quantity, price);
+                return Ok(new { message = "Đã thêm vào giỏ hàng thành công!" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Có lỗi xảy ra khi thêm vào giỏ hàng!" });
+            }
         }
 
         [HttpDelete("item/{cartItemId}")]
