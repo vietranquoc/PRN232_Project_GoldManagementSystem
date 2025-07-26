@@ -1,6 +1,7 @@
 using BusinessObjects.EntityModel;
 using Repositories.Infrastructure.Interfaces;
 using Services.Services.Interfaces;
+using BusinessObjects.DTOs;
 
 namespace Services.Services.Implementations
 {
@@ -42,11 +43,34 @@ namespace Services.Services.Implementations
 
         public async Task AddOrUpdateCartItemAsync(int cartId, int productId, int quantity, decimal price)
         {
+            // Kiểm tra stock của sản phẩm
+            var product = await _productRepository.GetByIdAsync(productId);
+            if (product == null)
+                throw new InvalidOperationException("Sản phẩm không tồn tại");
+            
+            if (product.Quantity <= 0)
+                throw new InvalidOperationException("Sản phẩm đã hết hàng");
+            
             var items = await _cartItemRepository.GetItemsByCartIdAsync(cartId);
             var item = items.FirstOrDefault(i => i.ProductId == productId);
+            
+            int newQuantity;
             if (item != null)
             {
-                item.Quantity += quantity;
+                newQuantity = item.Quantity + quantity;
+            }
+            else
+            {
+                newQuantity = quantity;
+            }
+            
+            // Kiểm tra xem tổng số lượng có vượt quá stock không
+            if (newQuantity > product.Quantity)
+                throw new InvalidOperationException($"Chỉ còn {product.Quantity} sản phẩm trong kho");
+            
+            if (item != null)
+            {
+                item.Quantity = newQuantity;
                 _cartItemRepository.Update(item);
             }
             else
@@ -83,21 +107,45 @@ namespace Services.Services.Implementations
             await _cartItemRepository.SaveChangesAsync();
         }
 
-        public async Task<bool> CheckoutAsync()
+        public async Task<Transaction> CheckoutAsync(CartCheckoutDTO dto)
         {
+            if (dto.DeliveryMethod == "pickup")
+            {
+                dto.Province = "Nhận tại cửa hàng";
+                dto.District = "Nhận tại cửa hàng";
+                dto.Address = "Nhận tại cửa hàng";
+            }
+            
+            if (string.IsNullOrWhiteSpace(dto.Address))
+                dto.Address = "Không xác định";
+            if (string.IsNullOrWhiteSpace(dto.Province))
+                dto.Province = "Không xác định";
+            if (string.IsNullOrWhiteSpace(dto.District))
+                dto.District = "Không xác định";
+
             var cart = await _cartRepository.GetActiveCartByUserIdAsync();
-            if (cart == null) return false;
+            if (cart == null) return null;
             var items = await _cartItemRepository.GetItemsByCartIdAsync(cart.Id);
-            if (!items.Any()) return false;
+            if (!items.Any()) return null;
+
+            decimal shippingFee = 0;
+            if (dto.ShippingMethod == "shipping2")
+                shippingFee = 100000;
 
             var transaction = new Transaction
             {
                 UserId = _cartRepository.GetCurrentUserId(),
-                GoldTypeId = 0, // Nếu cần, có thể lấy GoldTypeId đầu tiên hoặc bỏ trường này
-                UnitPrice = 0, // Không dùng nữa, chỉ để tránh lỗi nếu entity còn trường này
+                UnitPrice = 0, // hoặc logic phù hợp
                 TotalAmount = 0,
                 TransactionDate = DateTime.UtcNow,
-                Status = "COMPLETED",
+                Status = "PENDING", // Thay đổi status thành PENDING
+                ReceiverName = dto.ReceiverName,
+                ReceiverPhone = dto.ReceiverPhone,
+                ReceiverEmail = dto.ReceiverEmail,
+                Province = dto.Province,
+                District = dto.District,
+                Address = dto.Address,
+                Note = dto.Note,
                 TransactionDetails = new List<TransactionDetail>()
             };
 
@@ -120,11 +168,13 @@ namespace Services.Services.Implementations
                 transaction.TransactionDetails.Add(detail);
             }
 
+            transaction.TotalAmount += shippingFee; // Cộng phí ship vào tổng tiền
+
             _transactionRepository.Insert(transaction);
             await _transactionRepository.SaveChangesAsync();
             await _productRepository.SaveChangesAsync();
             await ClearCartAsync(cart.Id);
-            return true;
+            return transaction;
         }
     }
 } 

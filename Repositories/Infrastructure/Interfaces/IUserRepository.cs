@@ -1,4 +1,5 @@
-﻿using BusinessObjects.EntityModel;
+﻿ using BusinessObjects.DTOs;
+using BusinessObjects.EntityModel;
 
 namespace Repositories.Infrastructure.Interfaces
 {

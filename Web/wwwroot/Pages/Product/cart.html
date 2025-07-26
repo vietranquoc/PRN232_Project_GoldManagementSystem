@@ -159,8 +159,23 @@
                         url: `https://localhost:5000/api/cart/add?productId=${item.productId}&quantity=${newQty-item.quantity}&price=${item.price}`,
                         method: 'POST',
                         headers: { 'Authorization': 'Bearer ' + token },
-                        complete: function() {
+                        success: function() {
                             loadCheckoutCart();
+                        },
+                        error: function(xhr) {
+                            let errorMsg = 'Lỗi khi cập nhật số lượng!';
+                            try {
+                                const response = JSON.parse(xhr.responseText);
+                                errorMsg = response.message || errorMsg;
+                            } catch (e) {
+                                errorMsg = xhr.responseText || errorMsg;
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi!',
+                                text: errorMsg
+                            });
+                            loadCheckoutCart(); 
                         }
                     });
                 }

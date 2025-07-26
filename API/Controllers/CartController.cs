@@ -1,3 +1,4 @@
+using BusinessObjects.DTOs;
 using BusinessObjects.EntityModel;
 using BusinessObjects.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -46,9 +47,20 @@ namespace API.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddOrUpdateCartItem(int productId, int quantity, decimal price)
         {
-            var cart = await _cartService.GetOrCreateActiveCartAsync();
-            await _cartService.AddOrUpdateCartItemAsync(cart.Id, productId, quantity, price);
-            return Ok();
+            try
+            {
+                var cart = await _cartService.GetOrCreateActiveCartAsync();
+                await _cartService.AddOrUpdateCartItemAsync(cart.Id, productId, quantity, price);
+                return Ok(new { message = "Đã thêm vào giỏ hàng thành công!" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Có lỗi xảy ra khi thêm vào giỏ hàng!" });
+            }
         }
 
         [HttpDelete("item/{cartItemId}")]
@@ -67,12 +79,17 @@ namespace API.Controllers
         }
 
         [HttpPost("checkout")]
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout([FromBody] CartCheckoutDTO dto)
         {
-            var result = await _cartService.CheckoutAsync();
-            if (!result)
+            var transaction = await _cartService.CheckoutAsync(dto);
+            if (transaction == null)
                 return BadRequest("Checkout thất bại hoặc giỏ hàng trống!");
-            return Ok("Đã checkout thành công. Đơn hàng sẽ được xử lý!");
+            
+            return Ok(new { 
+                message = "Đã checkout thành công. Đơn hàng sẽ được xử lý!",
+                orderId = transaction.Id.ToString(),
+                totalAmount = transaction.TotalAmount
+            });
         }
     }
 } 

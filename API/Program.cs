@@ -56,6 +56,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductImageService, ProductImageService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<ICartItemService, CartItemService>();
+builder.Services.AddScoped<IVNPayService, VNPayService>();
 
 
 builder.Services.AddAuthentication(options =>

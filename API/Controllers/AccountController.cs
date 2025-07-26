@@ -211,5 +211,23 @@ namespace API.Controllers
                 return StatusCode(500, $"Logout failed: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("profile")]
+        [Authorize]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                return Unauthorized();
+
+            int userId = int.Parse(userIdClaim.Value);
+
+            var profile = await _accountService.GetProfileAsync(userId);
+            return Ok(profile);
+        }
     }
 }

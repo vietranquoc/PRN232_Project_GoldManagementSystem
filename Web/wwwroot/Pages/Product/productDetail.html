@@ -102,9 +102,16 @@
                 $('#productColor').text(res.color || '');
                 $('#productStock').text(res.quantity > 0 ? 'Còn hàng' : 'Hết hàng').toggleClass('bg-success', res.quantity > 0).toggleClass('bg-danger', res.quantity <= 0);
                 $('#productQuantity').val(1).attr('max', res.quantity);
-                // Breadcrumb
+                
+                if (res.quantity <= 0) {
+                    $('#addToCartBtn').prop('disabled', true).text('Hết hàng').removeClass('add-to-cart-btn').addClass('btn-secondary');
+                    $('#buyNowBtn').prop('disabled', true).text('Hết hàng').removeClass('btn-buy-now').addClass('btn-secondary');
+                } else {
+                    $('#addToCartBtn').prop('disabled', false).html('<i class="fas fa-shopping-bag"></i> Thêm vào giỏ').removeClass('btn-secondary').addClass('add-to-cart-btn');
+                    $('#buyNowBtn').prop('disabled', false).html('MUA NGAY<div class="product-buy-subtext">(Giao nhanh từ 2 giờ hoặc nhận tại cửa hàng)</div>').removeClass('btn-secondary').addClass('btn-buy-now');
+                }
                 $('#breadcrumb-name').text(res.name);
-                // Ảnh
+                
                 let currentImageIdx = 0;
                 let images = res.images && res.images.length > 0 ? res.images : [{ imageUrl: 'https://via.placeholder.com/400x400' }];
                 function renderThumbnails() {
@@ -154,14 +161,16 @@
         });
 
         $('#addToCartBtn').on('click', function() {
+            if ($(this).prop('disabled')) {
+                return;
+            }
+            
             const token = localStorage.getItem('accessToken');
             if (!token) {
-                // Nếu chưa đăng nhập, chuyển hướng sang trang đăng nhập
                 window.location.href = '../../Pages/Account/login.html';
                 return; 
             }
 
-            // Lấy id sản phẩm và số lượng
             const productId = getProductIdFromUrl();
             const quantity = parseInt($('#productQuantity').val()) || 1;
 
@@ -175,16 +184,66 @@
                 headers: {
                     'Authorization': 'Bearer ' + token
                 },
-                success: function() {
+                success: function(response) {
                     Swal.fire({
                         icon: 'success',
                         title: 'Thành công!',
-                        text: 'Đã thêm vào giỏ hàng!'
+                        text: response.message || 'Đã thêm vào giỏ hàng!'
                     });
                 },
                 error: function(xhr) {
-                    let msg = xhr.responseText || 'Lỗi khi thêm vào giỏ hàng!';
-                    alert('Lỗi: ' + msg);
+                    let errorMsg = 'Lỗi khi thêm vào giỏ hàng!';
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        errorMsg = response.message || errorMsg;
+                    } catch (e) {
+                        errorMsg = xhr.responseText || errorMsg;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: errorMsg
+                    });
+                }
+            });
+        });
+
+        $('#buyNowBtn').on('click', function() {
+            if ($(this).prop('disabled')) {
+                return;
+            }
+            
+            const token = localStorage.getItem('accessToken');
+            if (!token) {
+                window.location.href = '../../Pages/Account/login.html';
+                return;
+            }
+            const productId = getProductIdFromUrl();
+            const quantity = parseInt($('#productQuantity').val()) || 1;
+            let priceText = $('#productPrice').text().replace(/[^\d]/g, '');
+            let price = parseInt(priceText) || 0;
+            $.ajax({
+                url: `https://localhost:5000/api/cart/add?productId=${productId}&quantity=${quantity}&price=${price}`,
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function(response) {
+                    window.location.href = '/Pages/Product/cart.html';
+                },
+                error: function(xhr) {
+                    let errorMsg = 'Lỗi khi thêm vào giỏ hàng!';
+                    try {
+                        const response = JSON.parse(xhr.responseText);
+                        errorMsg = response.message || errorMsg;
+                    } catch (e) {
+                        errorMsg = xhr.responseText || errorMsg;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi!',
+                        text: errorMsg
+                    });
                 }
             });
         });

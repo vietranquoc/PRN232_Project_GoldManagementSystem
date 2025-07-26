@@ -343,5 +343,25 @@ namespace Services.Services.Implementations
                 throw;
             }
         }
+
+        public async Task<UserDTO> GetProfileAsync(int userId)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null) throw new Exception("User not found.");
+
+            return new UserDTO
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Username = user.Username,
+                Phone = user.PhoneNumber,
+                Address = user.Address,
+                Email = user.Email,
+                RoleName = user.Role?.Name,
+                IsActive = user.IsActive,
+                CreatedDate = user.CreatedDate,
+                CreatedBy = user.CreatedBy
+            };
+        }
     }
 }

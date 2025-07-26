@@ -83,10 +83,10 @@ namespace BusinessObjects.DBContext
                 .WithMany(gt => gt.GoldPrices)
                 .HasForeignKey(gp => gp.GoldTypeId);
             
-            modelBuilder.Entity<Transaction>()
-                .HasOne(t => t.GoldType)
-                .WithMany(gt => gt.Transactions)
-                .HasForeignKey(t => t.GoldTypeId);
+            // modelBuilder.Entity<Transaction>()
+            //     .HasOne(t => t.GoldType)
+            //     .WithMany(gt => gt.Transactions)
+            //     .HasForeignKey(t => t.GoldTypeId);
             
             modelBuilder.Entity<Transaction>()
                 .HasOne(t => t.User)

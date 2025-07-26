@@ -7,7 +7,6 @@ namespace BusinessObjects.EntityModel
     public class Transaction : EntityBase
     {
         public int UserId { get; set; }
-        public int GoldTypeId { get; set; }
         [Required]
         public decimal UnitPrice { get; set; }
         [Required]
@@ -37,7 +36,6 @@ namespace BusinessObjects.EntityModel
         [MaxLength(500)]
         public string? Note { get; set; }
         public virtual User User { get; set; } = null!;
-        public virtual GoldType GoldType { get; set; } = null!;
         public virtual ICollection<TransactionDetail> TransactionDetails { get; set; } = new List<TransactionDetail>();
     }
 }
