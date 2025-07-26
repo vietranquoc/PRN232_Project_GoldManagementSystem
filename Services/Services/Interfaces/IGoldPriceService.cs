@@ -13,5 +13,6 @@ namespace Services.Services.Interfaces
         Task<GoldPriceViewModel> UpdateAsync(UpdateGoldPriceDTO dto);
         Task<bool> DeleteAsync(int id);
         Task<GoldPriceViewModel> GetLatestByGoldTypeIdAsync(int goldTypeId);
+        Task<decimal?> GetGoldPriceInVNDAsync();
     }
 }

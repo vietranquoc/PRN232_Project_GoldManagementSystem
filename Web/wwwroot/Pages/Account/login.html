@@ -12,9 +12,9 @@
     <div class="login-container">
         <div class="user-icon">
             <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="24" cy="24" r="24" fill="#f2cb05"/>
-                <circle cx="24" cy="20" r="8" fill="white"/>
-                <ellipse cx="24" cy="34" rx="12" ry="7" fill="white"/>
+                <circle cx="24" cy="24" r="24" fill="#f2cb05" />
+                <circle cx="24" cy="20" r="8" fill="white" />
+                <ellipse cx="24" cy="34" rx="12" ry="7" fill="white" />
             </svg>
         </div>
         <form id="loginForm">
@@ -33,6 +33,12 @@
                 <a href="forgot-password.html" class="forgot-password">Quên mật khẩu?</a>
             </div>
         </form>
+        <div class="text-center mt-3">
+            <a href="https://localhost:5000/api/account/login-google" class="btn btn-danger">
+                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" style="width:20px; margin-right:10px;">
+                Đăng nhập bằng Google
+            </a>
+        </div>
         <div id="loginMessage" class="alert d-none"></div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

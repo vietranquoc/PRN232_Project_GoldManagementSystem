@@ -1,7 +1,11 @@
-﻿using BusinessObjects.DTOs;
+﻿using System.Security.Claims;
+using BusinessObjects.DTOs;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.Google;
 
 namespace API.Controllers
 {
@@ -42,6 +46,16 @@ namespace API.Controllers
             {
                 return Unauthorized(ex.Message);
             }
+        }
+
+        [HttpGet("login-google")]
+        public IActionResult LoginWithGoogle(string returnUrl = "https://localhost:5001/")
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = returnUrl 
+            };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
 
         /// <summary>
@@ -115,7 +129,7 @@ namespace API.Controllers
         {
             try
             {
-                var users = await _accountService.GetUsersByRoleAsync("Manager"); 
+                var users = await _accountService.GetUsersByRoleAsync("Manager");
                 return Ok(users);
             }
             catch (Exception ex)
@@ -185,11 +199,11 @@ namespace API.Controllers
             {
                 // Lấy user ID từ token
                 var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0");
-                
+
                 // Có thể thêm logic để blacklist token hoặc cập nhật trạng thái user
                 // Hiện tại chỉ trả về thông báo thành công
                 await _accountService.LogoutAsync(userId);
-                
+
                 return Ok(new { message = "Logout successful" });
             }
             catch (Exception ex)
